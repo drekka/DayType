@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "0B524230-70B6-44A8-A8F1-5D140328C651",
+      "name" : "Configuration 1",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "testTimeoutsEnabled" : true
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "DayTypeTests",
+        "name" : "DayTypeTests"
+      }
+    }
+  ],
+  "version" : 1
+}
