@@ -1,17 +1,12 @@
 # DayType
 
-Software often has to deal with dates. Sometimes we get them as what is commonly called ['Epoch' time](https://en.wikipedia.org/wiki/Unix_time). That is, milli or micro-seconds since 1 Jan 1970. Sometimes it's one of the many [ISO8601 text representations](https://en.wikipedia.org/wiki/ISO_8601) of time. Sometimes with a timezone value, sometimes without. Sometimes it's an old legacy string from an old legacy server. Sometimes it's just a date without time or timezone. In other words there's a bazillion ways we can end up having to understand a date and time.
+DayType allows you to deal with dates in Swift without the time and time zone overheads that come with Swifrt's `Date` type.
 
-And Apple hasn't made it easy. 
+Software often needs to deal with dates. For example, a date of birth or the day someone started a job. This is how people think. Whilst a lot of things need to be specified down to the second or even finer, humans often only think and refer to something in terms of the relevant date. 
 
-Firstly by providing only one type to represent a point in time, then calling it `Date`. As humans think of it, a 'date' is a 24 hour period that (depending on timezone) which then 'floats' within a 48 hour period depending on the timezone. Apple's `Date` is a specific point in time, not a period of time, and is measured in seconds since January 1 1970. This means that it represents the same point regardless of any timezone. Which is why Apple's APIs require a `Calendar` to use a `Timezone` in order to convert a `Date` into a human readable form. Because people think in terms of time in their timezone, not as a point in time for the whole planet. 
+The problem though is that Swift's `Date` type refers to a specific point in time, not a generalised date. So it forces you to deal with hours, minutes and seconds every time you want to perform any date related functionality regardless of whether they're relevant or not. Even when doing something as simply as comparing two dates to see if they are the same. You have to write code to ignore the time elements micro-seconds and then make sure you use the same time zone and calendar. This disconnect between the concept of a date as we think of it and Swift's point in time `Date` can cause a whole range of problems any time we need to compare, calculate or otherwise manipulate them.
 
-For example, using the [Epoch time](https://www.epochconverter.com) (which is what Apple is doing) of 1680217800 seconds since January 1 1970, we can calculate that it is Thursday, 30 March 2023 11:10:00 PM in the GMT timezone, and Friday, 31 March 2023 10:10:00 AM in a GMT+11:00 DST timezone.
+DayType addresses this issue by using all the same math behind Swift's `Date`, but only to the resolution of a single day. It does this by introducing a new `Day` type. It would make more sense to call it `Date` but that would get confusing so it's called `Day`. `Calendar` and `TimeZone` are still used when dealing with `Day` types, but only when converting to or from things like epoch times and Swift's `Date` type. Pure `Day` related functionality neither needs or uses these types.
 
-So Apple's `Date` is great for working with specific points in time, but rubbish when dealing with just dates. Sure there's a heap of functions for converting across timezones, extracting date values, measuring days between, etc. But in every case it's using specific points in time and if you are only interested in a date, not the hours and minutes, etc, then you'll find yourself having to do all sorts of stuff just to make sure that the hours,minutes and timezones don't get in the way. Mostly zeroing out time components of a date before doing any form of date related calculation.
 
-It's a pain.
 
-Which is why I've written DayType, to make dealing with dates easy by handling all the complex stuff for you. 
-
-DayType introduces a new type called `Day`. I would have called it `Date` but that would clash with Apple's implementation and just confuse things. So it's called `Day` because it represents a day, without reference to any specific timezone and without any time elements. So when you want to calendar up something for the 17th August or whatever, you don't have to worry about which timezone your in or what time of day.
