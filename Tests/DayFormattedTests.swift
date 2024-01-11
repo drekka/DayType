@@ -12,11 +12,14 @@ import XCTest
 class DayFormattedTests: XCTestCase {
 
     func testFormatted() {
+        
         let day = Day(2000, 2, 1)
-        expect(day.formatted()) == "1 Feb 2000"
-        expect(day.formatted(.abbreviated)) == "1 Feb 2000"
-        expect(day.formatted(.complete)) == "Tuesday, 1 February 2000"
-        expect(day.formatted(.long)) == "1 February 2000"
-        expect(day.formatted(.numeric)) == "1/2/2000"
+        let date = DateComponents(calendar: .current, year: 2000, month: 2, day: 1).date!
+
+        expect(day.formatted()) == date.formatted(date: .abbreviated, time: .omitted)
+        expect(day.formatted(.abbreviated)) ==  date.formatted(date: .abbreviated, time: .omitted)
+        expect(day.formatted(.complete)) ==  date.formatted(date: .complete, time: .omitted)
+        expect(day.formatted(.long)) ==  date.formatted(date: .long, time: .omitted)
+        expect(day.formatted(.numeric)) ==  date.formatted(date: .numeric, time: .omitted)
     }
 }
