@@ -22,7 +22,11 @@ jobs:
           timezoneMacos: "Australia/Melbourne"
           timezoneWindows: "Australia/Melbourne"
     # - uses: BinaryBirds/swift-test-report@0.0.1
-    - name: Build
-      run: swift build -v
+    - name: Set Au locale
+      run: |
+        export LANG="en_US.UTF-8"
+        export LC_ALL="en_US.UTF-8"
+    #- name: Build
+    #  run: swift build -v
     - name: Run tests
       run: swift test -v
