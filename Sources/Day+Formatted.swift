@@ -1,6 +1,6 @@
 //
 //  Day+Formatted.swift
-//  
+//
 //
 //  Created by Derek Clarkson on 6/12/2023.
 //
