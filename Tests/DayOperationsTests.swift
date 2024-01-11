@@ -30,6 +30,10 @@ class DayOperationTests: XCTestCase {
         day -= 5
         expect(day.daysSince1970) == 19440
     }
+
+    func testDayDiff() {
+        expect(Day(2020, 3, 12) - Day(2020, 3, 6)) == 6 
+    }
 }
 
 class DayEquatableTests: XCTestCase {

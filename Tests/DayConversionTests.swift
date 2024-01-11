@@ -27,11 +27,11 @@ class DayConversionTests: XCTestCase {
 
         // Get the date of the day in the Melbourne time zone.
         let melbourne = TimeZone(secondsFromGMT: 11 * 3600)!
-        let melbourneDate = day.date(inTimeZone: melbourne)
+        let melbourneDate = day.date(timeZone: melbourne)
 
         // Get the date of the day in the GMT time zone.
         let gmt = TimeZone(secondsFromGMT: 0)!
-        let gmtDate = day.date(inTimeZone: gmt)
+        let gmtDate = day.date(timeZone: gmt)
 
         // We expect that the two points in time are different.
         expect(melbourneDate.timeIntervalSince1970) != gmtDate.timeIntervalSince1970

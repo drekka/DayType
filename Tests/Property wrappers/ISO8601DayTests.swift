@@ -97,4 +97,3 @@ class ISO8601OptionalDayEncodingTests: XCTestCase {
         expect(String(data: result, encoding: .utf8)!) == #"{"d1":null}"#
     }
 }
-

@@ -26,15 +26,6 @@
         "revision" : "eb5e3d717224fa0d1f6aff3fc2c5e8e81fa1f728",
         "version" : "11.2.2"
       }
-    },
-    {
-      "identity" : "swift-syntax",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-syntax",
-      "state" : {
-        "revision" : "6ad4ea24b01559dde0773e3d091f1b9e36175036",
-        "version" : "509.0.2"
-      }
     }
   ],
   "version" : 2

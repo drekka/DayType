@@ -15,7 +15,8 @@ public typealias DayInterval = Int
 /// generalisation that is a day.
 ///
 /// Internally this is handled as the number of whole days since 1 Jan 1970 in a
-/// similar fashion to how Apple's ``Date`` works. All days being based on GMT. Then when converting to/from various timezones the appropriate number of seconds are added/removed to ensure that the
+/// similar fashion to how Apple's ``Date`` works. The raw calculations coming from the excellant work done [HERE](http://howardhinnant.github.io/date_algorithms.html#weekday_from_days).
+/// All days being based on GMT. Then when converting to/from various timezones the appropriate number of seconds are added/removed to ensure that the
 /// day is consistent for that timezone.
 public struct Day {
 
