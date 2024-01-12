@@ -49,13 +49,13 @@ let numberOfDays = Calendar.current.dateComponents([.day], from: fromDate, to: t
 
 # Property wrappers 
 
-`Day`'s internal value isn't something that external APIs are typically aware of. So to support the typical range of values that external APIs tend to use, `DayType` provides a range of property wrappers that can handle the processing. Each of which provide the relevant `Codable` support for reading `Day` values from JSON and other sources. 
+`Day`'s internal value isn't something that external APIs are typically aware of. So to support the typical values that external APIs tend to use `DayType` provides a variety of property wrappers implementing `Codable` to automatically handle the conversions. 
 
-_Note: All of these wrappers support both `Day` and `Day?` properties through the use of the `DayCoable` protocol which is applied to both._
+_Note: All of these wrappers support both `Day` and `Day?` properties through the use of the `DayCodable` protocol which is applied to both. Technically this protocol could be added to other types to make then covertable to `Day`._
 
 ## @EpochDay
 
-Reads and writes `Day` types as epoch integers. For example the JSON data structure:
+Converts [epoch timestamps](https://www.epochconverter.com) to `Day`. For example the JSON data structure:
 
 ```json
 {
@@ -73,7 +73,7 @@ struct MyType: Codable {
 
 ## @ISO8601Day
 
-Reads and writes `Day` types as [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) date strings. For example:
+Converts [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) date strings to `Day`. For example:
 
 ```json
 {
@@ -93,7 +93,7 @@ struct MyType: Codable {
 
 Where `T: DayCodable` and `Configurator: ISO8601Configurator`. 
 
-Internally `DayType` uses an `ISO8601DateFormatter` to read and write [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) strings. As there are a variety of ISO8601 formats, this property wrapper allows you to pre-configure the formatter before it is used.
+Internally `DayType` uses an `ISO8601DateFormatter` to read and write [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) strings. As there are a variety of ISO8601 formats, this property wrapper allows you to pre-configure the formatter before it processes the string.
 
 For example:
 
@@ -157,16 +157,17 @@ Similar to the way `Date` has a matching `DateComponents`, `Day` has a matching 
 
 Using a passed `Calendar` and `TimeZone`, this function coverts a `Day` to a Swift `Date` with the `Day`'s year, month and day, and a time of `00:00` (midnight). With no arguments this function uses the current calendar and time zone.
 
-
 ## .formatted(_:) -> String
 
 Wrapping `Date.formatted(date:time:)` this function formats a day using the standard formatting specified by the `Date.FormatStyle.DateStyle` styles. The time component of `Date.formatted(date:time:)` is omitted.
 
 # References and thanks
 
-* Can't thank [Howard Hinnant](http://howardhinnant.github.io) enough. His calculations are what I based this framework on.
+* Can't thank [Howard Hinnant](http://howardhinnant.github.io) enough. Using his math instead of Apple's APIs produced a significant speed boost when converting to and from years, months and days.  
 * Quick thank you to the guys behind the excellent [Nimble test assertion framework](https://github.com/Quick/Nimble).
 
 # Future additions
 
-Obviously there are a large number of useful functions that can be added to this API, many of which could come from various other calculations on [http://howardhinnant.github.io/date_algorithms.html#weekday_from_days](). However I will add these as requested rather than trying to re-implement a large number of possibilities that may not ben needed. So please feel free to request things you need.
+Obviously there are a large number of useful functions that can be added to this API, many of which could come from various other calculations on [http://howardhinnant.github.io/date_algorithms.html#weekday_from_days](). However I plan to add these as it becomes clear they will provide a useful addition rather than re-implementing a large number of functions that may not ben needed. 
+
+So please feel free to drop a request for thing you'd like added.
