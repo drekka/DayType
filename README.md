@@ -3,21 +3,19 @@
 
 (A friendly API for working with dates without the time of day)
 
-The problem that developers regularly encounter is that people often refer to dates without wanting or needing to go down to a specific time of day. For example, ask someone when is their birthday and the reply might be the 20th of October 1997. They won't tell you the exact birth time (if they even know it) because it's not needed. The same goes for many other things which are generally considered all day events. The start of a person's leave, the dates of a festival, Religious holidays, etc.
+Developers regularly need to refer to a date without needing to know a specific point in time. For example, a person's date of birth is often needed, but not the exact time they were born. The same goes for many other things. The dates of a person's leave, religious holidays, sales, festivals, etc.
 
-Swift though, only provides the `Date` type which is an exact point in time, not the generalisation that people think of as a date.
+Swift provides the excellent `Date`, `Calendar` and `TimeZone` types for details with specific points in time. But when it comes to the generalisation that is a date they can become a lot harder to work with. As a result developers often find themselves stripping the time components from Swift's `Date` to try and make them work as dates. Add in the complexities of time zone calculations and this can become quite fragile and prone to bugs. 
 
-This miss-match between what humans refer to as a "date" and Swift's `Date` often provides endless "fun" for developers with often messy and buggy results as they try to tame the translation from exact points in time to the generalisation that is a day. Especially when dealing with the additional complexity of time zones. 
-
-`DayType` sets out to address this by providing a `Day` type that resolves to a date without going any finer. No hours, no minutes, etc, just a date. This allows code to be simpler because it no longer needs to sanitise the time components, and removes the angst of accidental bugs from unexpected inputs and other data sources.
+`DayType` sets out to address these issues by providing `Day` which represents a general 24 hours period instead of a specific point in time. ie. no hours, minutes, etc. This allows date code to be simpler because it no longer needs to sanitise time components and removes the angst of accidental bugs as well as making date based calculations simpler.
 
 ## Installation
 
-`DayType` is a SPM package, so simply add it as you would any other package.
+`DayType` is a SPM package.
 
 # Creating a Day
 
-`Day` has a number of convenience initialisers which are pretty self explanatory. If you're familiar with Swift's `Date` you'll also recognise a few similarities:
+`Day` has a number of convenience initialisers which are pretty self explanatory and mostly similar to Swift's `Date`:
 
 ```swift
 init()
@@ -31,7 +29,23 @@ init(year: Int, month: Int, day: Int)
 
 # Codable
 
-`Day` is `Codable`. Reading and writing it's `.daysSince1970` integer value to and from the decoders and encoders. 
+`Day` is fully `Codable`. 
+
+The actual value it reads and write is an `Int` representing the number of days since 1970 and you can access it via the `.daysSince1970` property. 
+
+# Properties
+
+## .daysSince1970
+
+Literally the number of days since Swift's base date of 00:00:00 UTC on 1 January 1970. 
+
+_Note that will match the number of days produced by:_
+
+```swift
+let fromDate = Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0))
+let toDate = Calendar.current.startOfDay(for: Date())
+let numberOfDays = Calendar.current.dateComponents([.day], from: fromDate, to: toDate).day!
+```
 
 # Property wrappers 
 
