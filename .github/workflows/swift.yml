@@ -21,11 +21,8 @@ jobs:
           timezoneLinux: "Australia/Melbourne"
           timezoneMacos: "Australia/Melbourne"
           timezoneWindows: "Australia/Melbourne"
-    # - uses: BinaryBirds/swift-test-report@0.0.1
+    - uses: BinaryBirds/swift-test-report@0.0.1
     #- name: Build
     #  run: swift build -v
     - name: Run tests
-      run: | 
-        export LANG="en_AU.UTF-8"
-        export LC_ALL="en_AU.UTF-8"
-        swift test -v
+      run: swift test -v
