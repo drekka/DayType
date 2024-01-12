@@ -46,8 +46,7 @@ public struct Day {
     /// - timeIntervalSince1970: A ``TimeInterval`` representing the number of seconds since 1970. To obtain the number of days
     /// all the time components will be truncated.
     public init(timeIntervalSince1970: TimeInterval) {
-        // This drops any partial seconds before calculating using ints which will drop any fractional results.
-        self.init(date: Date(timeIntervalSince1970: timeIntervalSince1970))
+        self.init(daysSince1970: Int(timeIntervalSince1970) / (24 * 60 * 60))
     }
 
     /// Initializer that accepts a known date and calendar.

@@ -12,28 +12,29 @@ class DayTests: XCTestCase {
     // MARK: - Initialisers
 
     func testInit() {
-        let day = Day()
-        expect(day.daysSince1970) > 0
+        expect(Day().daysSince1970) > 0
     }
 
     func testInitDaysSince1970() {
-        let day = Day(daysSince1970: 19455)
-        expect(day.daysSince1970) == 19455
+        expect(Day(daysSince1970: 19455).daysSince1970) == 19455
     }
 
     func testInitTimeIntervalSince1970() {
-        let day = Day(timeIntervalSince1970: 1_680_954_742)
-        expect(day.daysSince1970) == 19455
+        expect(Day(timeIntervalSince1970: 1_680_954_742).daysSince1970) == 19455
+    }
+
+    func testInitTimeIntervalSince1970TruncationCheck() {
+        expect(Day(timeIntervalSince1970: 24 * 60 * 60 - 1).daysSince1970) == 0
+        expect(Day(timeIntervalSince1970: 24 * 60 * 60 + 0).daysSince1970) == 1
+        expect(Day(timeIntervalSince1970: 24 * 60 * 60 + 1).daysSince1970) == 1
     }
 
     func testInitComponents() {
-        let day = Day(components: DayComponents(year: 2023, month: 4, day: 8))
-        expect(day.daysSince1970) == 19455
+        expect(Day(components: DayComponents(year: 2023, month: 4, day: 8)).daysSince1970) == 19455
     }
 
     func testInitShortForm() {
-        let day = Day(2023, 4, 8)
-        expect(day.daysSince1970) == 19455
+        expect(Day(2023, 4, 8).daysSince1970) == 19455
     }
 
     func testDateToDayToDayComponents() {
