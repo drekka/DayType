@@ -25,4 +25,6 @@ jobs:
     #- name: Build
     #  run: swift build -v
     - name: Run tests
-      run: swift test -v
+      run: |
+        sudo xcode-select -s /Applications/Xcode_15.0.app
+        swift test -v
