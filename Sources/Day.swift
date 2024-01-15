@@ -20,10 +20,6 @@ public typealias DayInterval = Int
 /// day is consistent for that timezone.
 public struct Day {
 
-    private static let daysInEra = 146_097
-    private static let negativeEraAdjustment = 146_096
-    private static let unixTimeShift = 719_468
-
     public let daysSince1970: Int
 
     // MARK: - Initialisers
@@ -52,8 +48,7 @@ public struct Day {
     /// Initializer that accepts a known date and calendar.
     ///
     /// The calendar and it's timezone is them used to extract the year, month and day values before passing to the
-    /// ``init(date:usingCalendar:)`` initializer. Other components such as the time components will be ignoreed, or effectively
-    /// dropped.
+    /// ``init(date:usingCalendar:)`` initializer. Time components will be ignored.
     ///
     /// - parameter date: The date to read.
     /// - parameter calendar: The calender which will be used to extract the date components.
@@ -84,7 +79,7 @@ public struct Day {
     ///
     /// Note that this ``Day`` is Epoch based. ie. UTC. Also note that the passed values are rolling. So for example, passing a day of 45 for a month that has 30 days, will produce a date that is the 15th of the next month.
     ///
-    /// The math here has been sourced from the very detailed formulas defined here: [http://howardhinnant.github.io/date_algorithms.html]()
+    /// The math here has been sourced from the very detailed formulas defined at [http://howardhinnant.github.io/date_algorithms.html](http://howardhinnant.github.io/date_algorithms.html)
     ///
     /// - parameter year: The year in the passed timezone.
     /// - parameter month: The month in the passed timezone.
@@ -92,6 +87,15 @@ public struct Day {
     public init(year: Int, month: Int, day: Int) {
 
         // Note: These calculations made use of the way Ints round fractional parts down.
+        // Also note that whilst this code produces the same results as using Apple's APIs like this
+        //
+        // let calendar = Calendar.current
+        // let components = DateComponents(calendar: calendar, year: year, month: month, day: day)
+        // let fromDate = calendar.startOfDay(for: Date(timeIntervalSince1970: 0))
+        // let toDate = calendar.startOfDay(for: components.date!)
+        // daysSince1970 = calendar.dateComponents([.day], from: fromDate, to: toDate).day!
+        //
+        // it is significantly faster. ie. The unit test for a million iterations takes 2 seconds instead of over 30.
 
         // The nature of calendars is that there is no such thing as year zero. Only year 1 AD or BC.
         let year = year == 0 ? 1 : year
@@ -108,19 +112,30 @@ public struct Day {
         // Calculate the day of the era adjusting for leap years and centuries.
         let dayOfEra = yearOfEra * 365 + yearOfEra / 4 - yearOfEra / 100 + dayOfYear // Range: 0 -> 146096
 
-        daysSince1970 = era * Day.daysInEra + dayOfEra - Day.unixTimeShift
+        daysSince1970 = era * 146_097 + dayOfEra - 719_468
     }
 
     /// Returns the day components.
     public func dayComponents() -> DayComponents {
 
+        // Note that whilst this code produces the same results as using Apple's APIs like this
+        //
+        // let secondsSince1970 = TimeInterval(daysSince1970 * 60 * 60 * 24)
+        // let date = Date(timeIntervalSince1970: secondsSince1970)
+        // var calendar = Calendar.current
+        // calendar.timeZone = TimeZone(secondsFromGMT: 0)!
+        // let components = calendar.dateComponents([.year, .month, .day], from: date)
+        // return DayComponents(year: components.year!, month: components.month!, day: components.day!)
+        //
+        // it is significantly faster.
+
         // Shift the epoch from 1970-01-01 to 0000-03-01
-        let daysSinceZero = daysSince1970 + Day.unixTimeShift
+        let daysSinceZero = daysSince1970 + 719_468
 
         // Recalcate the era allowing for negative dates.
-        let era = (daysSinceZero >= 0 ? daysSinceZero : daysSinceZero - Day.negativeEraAdjustment) / Day.daysInEra
+        let era = (daysSinceZero >= 0 ? daysSinceZero : daysSinceZero - 146_096) / 146_097
 
-        let dayOfEra = daysSinceZero - era * Day.daysInEra // Range: 0-> 146096
+        let dayOfEra = daysSinceZero - era * 146_097 // Range: 0-> 146096
 
         // This accounts for the variations in numbers of days during the early parts of an era. See doco for details.
         let yearOfEra = (dayOfEra - dayOfEra / 1460 + dayOfEra / 36524 - dayOfEra / 146_096) / 365 // Range: 0 -> 399

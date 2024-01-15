@@ -11,31 +11,25 @@ import XCTest
 
 // MARK: - ISO8601 Decoding
 
-private enum SansTimeZone: ISO8601Configurator {
-    static func configure(formatter: ISO8601DateFormatter) {
-        formatter.formatOptions.remove(.withTimeZone)
-    }
-}
-
 private struct ISO8601CustomContainer<Configurator>: Codable where Configurator: ISO8601Configurator {
-    @CustomISO8601Day<Day, Configurator> var d1: Day
+    @CodableAsConfiguredISO8601<Day, Configurator> var d1: Day
     init(d1: Day) {
         self.d1 = d1
     }
 }
 
 private struct ISO8601CustomOptionalContainer<Configurator>: Codable where Configurator: ISO8601Configurator {
-    @CustomISO8601Day<Day?, Configurator> var d1: Day?
+    @CodableAsConfiguredISO8601<Day?, Configurator> var d1: Day?
     init(d1: Day?) {
         self.d1 = d1
     }
 }
 
-class CustomISO8601DayDecodingTests: XCTestCase {
+class CodableAsConfiguredISO8601Tests: XCTestCase {
 
     func testDecodingSansTimeZone() throws {
         let json = #"{"d1": "2012-02-02T13:33:23"}"#
-        let result = try JSONDecoder().decode(ISO8601CustomContainer<SansTimeZone>.self, from: json.data(using: .utf8)!)
+        let result = try JSONDecoder().decode(ISO8601CustomContainer<ISO8601Config.SansTimeZone>.self, from: json.data(using: .utf8)!)
         expect(result.d1) == Day(2012, 02, 03)
     }
 
@@ -81,13 +75,13 @@ class CustomISO8601OptionalDayDecodingTests: XCTestCase {
 
     func testDecodingSansTimeZone() throws {
         let json = #"{"d1": "2012-02-02T13:33:23"}"#
-        let result = try JSONDecoder().decode(ISO8601CustomOptionalContainer<SansTimeZone>.self, from: json.data(using: .utf8)!)
+        let result = try JSONDecoder().decode(ISO8601CustomOptionalContainer<ISO8601Config.SansTimeZone>.self, from: json.data(using: .utf8)!)
         expect(result.d1) == Day(2012, 02, 03)
     }
 
     func testDecodingSansTimeZoneWithNil() throws {
         let json = #"{"d1":null}"#
-        let result = try JSONDecoder().decode(ISO8601CustomOptionalContainer<SansTimeZone>.self, from: json.data(using: .utf8)!)
+        let result = try JSONDecoder().decode(ISO8601CustomOptionalContainer<ISO8601Config.SansTimeZone>.self, from: json.data(using: .utf8)!)
         expect(result.d1).to(beNil())
     }
 }
@@ -95,7 +89,7 @@ class CustomISO8601OptionalDayDecodingTests: XCTestCase {
 class ISO8601CustomDayEncodingTests: XCTestCase {
 
     func testEncoding() throws {
-        let instance = ISO8601CustomContainer<SansTimeZone>(d1: Day(2012, 02, 03))
+        let instance = ISO8601CustomContainer<ISO8601Config.SansTimeZone>(d1: Day(2012, 02, 03))
         let result = try JSONEncoder().encode(instance)
         expect(String(data: result, encoding: .utf8)!) == #"{"d1":"2012-02-02T13:00:00"}"#
     }
@@ -104,13 +98,13 @@ class ISO8601CustomDayEncodingTests: XCTestCase {
 class CustomISO8601OptionalDayEncodingTests: XCTestCase {
 
     func testEncoding() throws {
-        let instance = ISO8601CustomOptionalContainer<SansTimeZone>(d1: Day(2012, 02, 03))
+        let instance = ISO8601CustomOptionalContainer<ISO8601Config.SansTimeZone>(d1: Day(2012, 02, 03))
         let result = try JSONEncoder().encode(instance)
         expect(String(data: result, encoding: .utf8)!) == #"{"d1":"2012-02-02T13:00:00"}"#
     }
 
     func testEncodingNil() throws {
-        let instance = ISO8601CustomOptionalContainer<SansTimeZone>(d1: nil)
+        let instance = ISO8601CustomOptionalContainer<ISO8601Config.SansTimeZone>(d1: nil)
         let result = try JSONEncoder().encode(instance)
         expect(String(data: result, encoding: .utf8)!) == #"{"d1":null}"#
     }

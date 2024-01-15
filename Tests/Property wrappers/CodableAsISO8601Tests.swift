@@ -10,20 +10,21 @@ import Nimble
 import XCTest
 
 private struct ISO8601Container: Codable {
-    @ISO8601Day var d1: Day
+
+    @CodableAsISO8601 var d1: Day
     init(d1: Day) {
         self.d1 = d1
     }
 }
 
 private struct ISO8601OptionalContainer: Codable {
-    @ISO8601Day var d1: Day?
+    @CodableAsISO8601 var d1: Day?
     init(d1: Day?) {
         self.d1 = d1
     }
 }
 
-class ISO8601DayDecodingTests: XCTestCase {
+class CodableAsISO8601Tests: XCTestCase {
 
     func testDecoding() throws {
         let json = #"{"d1": "2012-02-03T10:33:23+11:00"}"#

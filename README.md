@@ -3,11 +3,11 @@
 
 (A friendly API for working with dates without the time of day)
 
-Developers regularly need to refer to a date without needing to know a specific point in time. For example, a person's date of birth is often needed, but not the exact time they were born. The same goes for many other things. The dates of a person's leave, religious holidays, sales, festivals, etc.
+Swift provides the excellent date support through `Date`, `Calendar`, `TimeZone` and other types. However these are all designed to work with specific points in time, rather than the generalisations that people often refer to. For example, a person's date of birth is often used without any reference to the exact time they were born. The same goes for a variety of other dates, an employee's person's leave, various religious holidays, retail sales, festivals, etc.
 
-Swift provides the excellent `Date`, `Calendar` and `TimeZone` types for details with specific points in time. But when it comes to the generalisation that is a date they can become a lot harder to work with. As a result developers often find themselves stripping the time components from Swift's `Date` to try and make them work as dates. Add in the complexities of time zone calculations and this can become quite fragile and prone to bugs. 
+As a result developers often find themselves stripping time components from Swift's `Date` to force it to act like a date, often with mixed results as there are many technical issues to consider when coercing a specific point to such a generalisation. Especially with the complexities of time zones and sometime questionable input from external sources.
 
-`DayType` sets out to address these issues by providing `Day` which represents a general 24 hours period instead of a specific point in time. ie. no hours, minutes, etc. This allows date code to be simpler because it no longer needs to sanitise time components and removes the angst of accidental bugs as well as making date based calculations simpler.
+`DayType` sets out to simplify date handling by providing a new `Day` type which represents a general 24 hours period instead of a specific point in time. ie. no hours, minutes, etc and no time zones. This allows date only code to be simpler because it no longer needs to sanitise time components which in turn removes the angst of accidental bugs as well as making date based calculations simpler.
 
 ## Installation
 
@@ -31,7 +31,7 @@ init(year: Int, month: Int, day: Int)
 
 `Day` is fully `Codable`. 
 
-The actual value it reads and write is an `Int` representing the number of days since 1970 and you can access it via the `.daysSince1970` property. 
+It's base value is an `Int` representing the number of days since 1 January 1970 which can accessed via the `.daysSince1970` property. 
 
 # Properties
 
@@ -39,7 +39,7 @@ The actual value it reads and write is an `Int` representing the number of days 
 
 Literally the number of days since Swift's base date of 00:00:00 UTC on 1 January 1970. 
 
-_Note that will match the number of days produced by:_
+_Note that matches the number of days produced by this Apple API based code:_
 
 ```swift
 let fromDate = Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0))
@@ -49,13 +49,13 @@ let numberOfDays = Calendar.current.dateComponents([.day], from: fromDate, to: t
 
 # Property wrappers 
 
-`Day`'s internal value isn't something that external APIs are typically aware of. So to support the typical range of values that external APIs tend to use, `DayType` provides a range of property wrappers that can handle the processing. Each of which provide the relevant `Codable` support for reading `Day` values from JSON and other sources. 
+`Day`'s internal value isn't something that external APIs are typically aware of. So to support the typical values that external APIs tend to use `DayType` provides a variety of property wrappers implementing `Codable` to automatically handle the conversions. 
 
-_Note: All of these wrappers support both `Day` and `Day?` properties through the use of the `DayCoable` protocol which is applied to both._
+_Note: All of these wrappers support both `Day` and `Day?` properties through the use of the `DayCodable` protocol which is applied to both. Technically this protocol could be added to other types to make them convertible to `Day`._
 
-## @EpochDay
+## @CodableAsEpochSeconds
 
-Reads and writes `Day` types as epoch integers. For example the JSON data structure:
+Converts [epoch timestamps](https://www.epochconverter.com) to `Day`. For example the JSON data structure:
 
 ```json
 {
@@ -67,13 +67,31 @@ Can be read by:
 
 ```swift
 struct MyType: Codable {
-  @EpochDay var dob: Day // or Day?
+  @CodableAsEpochSeconds var dob: Day // or Day?
 }
 ```
 
-## @ISO8601Day
+## @CodableAsEpochMilliseconds
 
-Reads and writes `Day` types as [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) date strings. For example:
+Essentially the same as `@CodableAsEpochSeconds` but expects the epoch time to be in millisecond [epoch timestamps](https://www.epochconverter.com). For example the JSON data structure:
+
+```json
+{
+  "dob":856616400123
+}
+```
+
+Can be read by:
+
+```swift
+struct MyType: Codable {
+  @CodableAsEpochMilliseconds var dob: Day // or Day?
+}
+```
+
+## @CodableAsISO8601
+
+Converts [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) date strings to `Day`. For example:
 
 ```json
 {
@@ -85,15 +103,15 @@ Can be read by:
 
 ```swift
 struct MyType: Codable {
-  @ISO8601Day var dob: Day // or Day?
+  @CodableAsISO8601 var dob: Day // or Day?
 }
 ```
 
-## @CustomISO8601Day<T, Configurator>
+## @CodableAsConfiguredISO8601<T, Configurator>
 
 Where `T: DayCodable` and `Configurator: ISO8601Configurator`. 
 
-Internally `DayType` uses an `ISO8601DateFormatter` to read and write [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) strings. As there are a variety of ISO8601 formats, this property wrapper allows you to pre-configure the formatter before it is used.
+Internally `DayType` uses an `ISO8601DateFormatter` to read and write [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) strings. As there are a variety of ISO8601 formats, this property wrapper allows you to pre-configure the formatter before it processes the string.
 
 For example:
 
@@ -114,13 +132,25 @@ enum MinimalFormat: ISO8601Configurator {
 }
 
 struct MyType: Codable {
-  @CustomISO8601Day<Day, MinimalFormat> var dob: Day
+  @CodableAsConfiguredISO8601<Day, MinimalFormat> var dob: Day
   // or ...
-  @CustomISO8601Day<Day?, MinimalFormat> var dob: Day?
+  @CodableAsConfiguredISO8601<Day?, MinimalFormat> var dob: Day?
 }
 ```
 
 The `ISO8601Configurator` protocol specifies only a single function which is  `static`. That function is used to configure the formatter used to read and write the date strings. 
+
+_Note that because Swift does not current support specifying a default type for a generic argument, `@CodableAsConfiguredISO8601<T, Configurator>` requires you to specify the `DayCodable` type (`Day` or `Day?`) which must match the type of the property._
+
+## Supplied ISO8601 configurators
+
+### ISO8601Config.Default
+
+This configurator does not change the formatter. It's main purpose is to support the `@CodableAsISO8601` property wrapper.
+
+### ISO8601Config.SansTimeZone
+
+This configurator is for the common situation where the ISO8601 string does not have the time zone specified. For example `"1997-02-22T13:00:00"`.
 
 # Manipulating Day types
 
@@ -157,16 +187,17 @@ Similar to the way `Date` has a matching `DateComponents`, `Day` has a matching 
 
 Using a passed `Calendar` and `TimeZone`, this function coverts a `Day` to a Swift `Date` with the `Day`'s year, month and day, and a time of `00:00` (midnight). With no arguments this function uses the current calendar and time zone.
 
-
 ## .formatted(_:) -> String
 
 Wrapping `Date.formatted(date:time:)` this function formats a day using the standard formatting specified by the `Date.FormatStyle.DateStyle` styles. The time component of `Date.formatted(date:time:)` is omitted.
 
 # References and thanks
 
-* Can't thank [Howard Hinnant](http://howardhinnant.github.io) enough. His calculations are what I based this framework on.
+* Can't thank [Howard Hinnant](http://howardhinnant.github.io) enough. Using his math instead of Apple's APIs produced a significant speed boost when converting to and from years, months and days.  
 * Quick thank you to the guys behind the excellent [Nimble test assertion framework](https://github.com/Quick/Nimble).
 
 # Future additions
 
-Obviously there are a large number of useful functions that can be added to this API, many of which could come from various other calculations on [http://howardhinnant.github.io/date_algorithms.html#weekday_from_days](). However I will add these as requested rather than trying to re-implement a large number of possibilities that may not ben needed. So please feel free to request things you need.
+Obviously there are a large number of useful functions that can be added to this API, many of which could come from various other calculations on [http://howardhinnant.github.io/date_algorithms.html#weekday_from_days](). However I plan to add these as it becomes clear they will provide a useful addition rather than re-implementing a large number of functions that may not ben needed. 
+
+So please feel free to drop a request for thing you'd like added.
