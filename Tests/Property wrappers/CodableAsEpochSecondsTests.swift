@@ -10,20 +10,20 @@ import Nimble
 import XCTest
 
 private struct EpochContainer: Codable {
-    @EpochDay var d1: Day
+    @CodableAsEpochSeconds var d1: Day
     init(d1: Day) {
         self.d1 = d1
     }
 }
 
 private struct EpochOptionalContainer: Codable {
-    @EpochDay var d1: Day?
+    @CodableAsEpochSeconds var d1: Day?
     init(d1: Day?) {
         self.d1 = d1
     }
 }
 
-class EpochDayDecodingTests: XCTestCase {
+class CodableAsEpochSecondsDecodingTests: XCTestCase {
 
     func testDecoding() throws {
         let json = #"{"d1": 1328251182}"#
@@ -44,7 +44,7 @@ class EpochDayDecodingTests: XCTestCase {
 
 }
 
-class EpochOptionalDayDecodingTests: XCTestCase {
+class CodableAsEpochSecondsDecodiongOptionalTests: XCTestCase {
 
     func testDecoding() throws {
         let json = #"{"d1": 1328251182}"#
@@ -69,7 +69,7 @@ class EpochOptionalDayDecodingTests: XCTestCase {
     }
 }
 
-class EpochDayEncodingTests: XCTestCase {
+class CodableAsEpochSecondsEncodingTests: XCTestCase {
 
     func testEncoding() throws {
         let instance = EpochContainer(d1: Day(2012, 02, 03))
@@ -78,7 +78,7 @@ class EpochDayEncodingTests: XCTestCase {
     }
 }
 
-class EpochOptionalDayEncodingTests: XCTestCase {
+class CodableAsEpochSecondsEncodingOptionalTests: XCTestCase {
 
     func testEncoding() throws {
         let instance = EpochOptionalContainer(d1: Day(2012, 02, 03))

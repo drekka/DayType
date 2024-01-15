@@ -14,8 +14,19 @@ public protocol ISO8601Configurator {
     static func configure(formatter: ISO8601DateFormatter)
 }
 
-/// A default implementation of a ``ISO8601CodingStrategy`` that's used
-/// in the default property wrappers.
-public enum ISO8601DefaultConfigurator: ISO8601Configurator {
-    public static func configure(formatter _: ISO8601DateFormatter) {}
+/// USeful common configurations of ISO8601 formatters.
+public enum ISO8601Config {
+
+    /// A default implementation that leaves the formatted untouched from it's defaults.
+    /// in the default property wrappers.
+    public enum Default: ISO8601Configurator {
+        public static func configure(formatter _: ISO8601DateFormatter) {}
+    }
+
+    /// Removes the time zone element from the string.
+    public enum SansTimeZone: ISO8601Configurator {
+        public static func configure(formatter: ISO8601DateFormatter) {
+            formatter.formatOptions.remove(.withTimeZone)
+        }
+    }
 }
