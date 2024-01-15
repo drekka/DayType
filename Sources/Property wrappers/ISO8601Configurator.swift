@@ -10,7 +10,7 @@ import Foundation
 /// Sets up the ``ISO8601DateFormatter`` used for decoding and encoding date strings.
 public protocol ISO8601Configurator {
 
-    /// Called whens etting up to decode or encode an ISO8601 date string.
+    /// Called when setting up to decode or encode an ISO8601 date string.
     static func configure(formatter: ISO8601DateFormatter)
 }
 

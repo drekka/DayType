@@ -9,7 +9,7 @@ import Foundation
 
 /// Identifies a ``Day`` property that reads and writes from an ISO8601 formatted string.
 @propertyWrapper
-public struct CustomISO8601Day<T, Configurator>: Codable where T: DayCodable, Configurator: ISO8601Configurator {
+public struct CustomISO8601Day<T, Configurator>: Codable where T: ISO8601Codable, Configurator: ISO8601Configurator {
 
     public var wrappedValue: T
 

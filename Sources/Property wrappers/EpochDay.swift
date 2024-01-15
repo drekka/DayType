@@ -9,7 +9,7 @@ import Foundation
 
 /// Identifies a ``Day`` property that reads and writes from an epoch time value.
 @propertyWrapper
-public struct EpochDay<T>: Codable where T: DayCodable {
+public struct EpochDay<T>: Codable where T: EpochCodable {
 
     public var wrappedValue: T
 

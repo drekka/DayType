@@ -10,6 +10,7 @@ import Nimble
 import XCTest
 
 private struct ISO8601Container: Codable {
+
     @ISO8601Day var d1: Day
     init(d1: Day) {
         self.d1 = d1
