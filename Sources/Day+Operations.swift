@@ -35,14 +35,3 @@ public extension Day {
     }
 }
 
-extension Day: Equatable {
-    public static func == (lhs: Day, rhs: Day) -> Bool {
-        lhs.daysSince1970 == rhs.daysSince1970
-    }
-}
-
-extension Day: Comparable {
-    public static func < (lhs: Day, rhs: Day) -> Bool {
-        lhs.daysSince1970 < rhs.daysSince1970
-    }
-}

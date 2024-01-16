@@ -32,47 +32,6 @@ class DayOperationTests: XCTestCase {
     }
 
     func testDayDiff() {
-        expect(Day(2020, 3, 12) - Day(2020, 3, 6)) == 6 
+        expect(Day(2020, 3, 12) - Day(2020, 3, 6)) == 6
     }
-}
-
-class DayEquatableTests: XCTestCase {
-
-    func testEquals() {
-        expect(Day(2020, 3, 12) == Day(2020, 3, 12)) == true
-        expect(Day(2020, 3, 12) == Day(2001, 1, 5)) == false
-    }
-
-    func testNotEquals() {
-        expect(Day(2020, 3, 12) != Day(2001, 1, 5)) == true
-        expect(Day(2020, 3, 12) != Day(2020, 3, 12)) == false
-    }
-}
-
-class DayComparableTests: XCTestCase {
-
-    func testGreaterThan() {
-        expect(Day(2020, 3, 12) > Day(2020, 3, 11)) == true
-        expect(Day(2020, 3, 12) > Day(2020, 3, 12)) == false
-        expect(Day(2020, 3, 12) > Day(2020, 3, 13)) == false
-    }
-
-    func testGreaterThanEquals() {
-        expect(Day(2020, 3, 12) >= Day(2020, 3, 11)) == true
-        expect(Day(2020, 3, 12) >= Day(2020, 3, 12)) == true
-        expect(Day(2020, 3, 12) >= Day(2020, 3, 13)) == false
-    }
-
-    func testLessThan() {
-        expect(Day(2020, 3, 12) < Day(2020, 3, 11)) == false
-        expect(Day(2020, 3, 12) < Day(2020, 3, 12)) == false
-        expect(Day(2020, 3, 12) < Day(2020, 3, 13)) == true
-    }
-
-    func testLessThanEquals() {
-        expect(Day(2020, 3, 12) <= Day(2020, 3, 11)) == false
-        expect(Day(2020, 3, 12) <= Day(2020, 3, 12)) == true
-        expect(Day(2020, 3, 12) <= Day(2020, 3, 13)) == true
-    }
-
 }
