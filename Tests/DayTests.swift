@@ -38,24 +38,29 @@ class DayTests: XCTestCase {
     }
 
     func testDateToDayToDayComponents() {
-
         let baseDate = Calendar.current.date(from: DateComponents(year: 1900, month: 1, day: 1))!
         for offset in 0 ..< 1_000_000 {
-
             let expectedDate = Calendar.current.date(byAdding: .day, value: offset, to: baseDate)!
-
             let day = Day(date: expectedDate)
-            let dayComponents = day.dayComponents()
-
-            let expectedDateComponents = Calendar.current.dateComponents([.year, .month, .day], from: expectedDate)
-            guard dayComponents.year == expectedDateComponents.year,
-                  dayComponents.month == expectedDateComponents.month,
-                  dayComponents.day == expectedDateComponents.day else {
-                print("Date components: \(expectedDateComponents)")
-                print("Day components : \(dayComponents)")
-                fail("Day from date and back to date failed")
+            guard matches(day: day, date: expectedDate) else {
                 break
             }
         }
+    }
+
+    private func matches(day: Day, date: Date, file: StaticString = #file, line: UInt = #line) -> Bool {
+
+        let dayComponents = day.dayComponents()
+        let dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: date)
+
+        guard dayComponents.year == dateComponents.year,
+              dayComponents.month == dateComponents.month,
+              dayComponents.day == dateComponents.day else {
+            print("Date components: \(dateComponents)")
+            print("Day components : \(dayComponents)")
+            fail("Day from date and back to date failed", file: file, line: line)
+            return false
+        }
+        return true
     }
 }

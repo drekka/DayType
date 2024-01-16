@@ -26,13 +26,6 @@ init(components: DayComponents)
 init(_ year: Int, _ month: Int, _ day: Int)
 init(year: Int, month: Int, day: Int) 
 ```
-
-# Codable
-
-`Day` is fully `Codable`. 
-
-It's base value is an `Int` representing the number of days since 1 January 1970 which can accessed via the `.daysSince1970` property. 
-
 # Properties
 
 ## .daysSince1970
@@ -181,11 +174,58 @@ Day(2000,1,10) - Day(2000,1,5) // -> 5 days duration.
 
 Similar to the way `Date` has a matching `DateComponents`, `Day` has a matching `DayComponents`. In this case mostly as a convenient wrapper for passing the individual values for a year, month and day. 
 
+# Conformance
+
+## Codable
+
+`Day` is fully `Codable`. 
+
+It's base value is an `Int` representing the number of days since 1 January 1970 which can accessed via the `.daysSince1970` property. 
+
+
+## Equatable
+
+`Day` is `Equatable` so 
+
+```swift
+Day(2001,2,3) == Day(2001,2,3) // true
+```
+
+## Comparable
+
+`Day` is `Comparable` which lets you use all the comparable operators to compare dates. ie. `>`, `<`, `>=` and `<=`. 
+
+## Hashable
+
+`Day` is `Hashable` so it can be used as dictionary keys and in sets.
+
+## Stridable
+
+`Day` is `Stridable` which means you can use it in for loops as well as with the `stride(from:to:by:)` function.
+
+```swift
+for day in Day(2000,1,1)...Day(2000,1,5) {
+    /// do something with the 1st, 2nd, 3rd, 4th and 5th.
+}
+
+for day in Day(2000,1,1)..<Day(2000,1,5) {
+    /// do something with the 1st, 2nd, 3rd and 4th.
+}
+
+for day in stride(from: Day(2000,1,1), to: Day(2000,1,5), by: 2) {
+    /// do something with the 1st and 3rd.
+}
+```
+
 # Other Day functions
 
 ## .date(inCalendar:timeZone:) -> Date
 
 Using a passed `Calendar` and `TimeZone`, this function coverts a `Day` to a Swift `Date` with the `Day`'s year, month and day, and a time of `00:00` (midnight). With no arguments this function uses the current calendar and time zone.
+
+## .day(byAdding:, value:) -> Day
+
+Lets you add any number of years, months or days to a `Day` and get a new `day` back. This is convenient for doing things like producing a sequence of dates for the same day on each month. 
 
 ## .formatted(_:) -> String
 

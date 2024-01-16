@@ -20,6 +20,13 @@ public typealias DayInterval = Int
 /// day is consistent for that timezone.
 public struct Day {
 
+    /// Used by functions to modify days.
+    public enum Component {
+        case year
+        case month
+        case day
+    }
+
     public let daysSince1970: Int
 
     // MARK: - Initialisers
