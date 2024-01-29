@@ -24,12 +24,12 @@ extension Day: EpochCodable {
             let context = DecodingError.Context(codingPath: decoder.codingPath, debugDescription: "Unable to read a Day value, expected an epoch.")
             throw DecodingError.dataCorrupted(context)
         }
-        self = Day(date: Date(timeIntervalSince1970: epochTime * factor))
+        self = Day(date: Date(timeIntervalSince1970: epochTime / factor))
     }
 
     public func encode(epochEncoder encoder: Encoder, factor: Double) throws {
         var container = encoder.singleValueContainer()
-        try container.encode(date().timeIntervalSince1970 / factor)
+        try container.encode(date().timeIntervalSince1970 * factor)
     }
 }
 

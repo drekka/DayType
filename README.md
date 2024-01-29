@@ -135,15 +135,58 @@ The `ISO8601Configurator` protocol specifies only a single function which is  `s
 
 _Note that because Swift does not current support specifying a default type for a generic argument, `@CodableAsConfiguredISO8601<T, Configurator>` requires you to specify the `DayCodable` type (`Day` or `Day?`) which must match the type of the property._
 
-## Supplied ISO8601 configurators
+### Supplied ISO8601 configurators
 
-### ISO8601Config.Default
+#### ISO8601Config.Default
 
 This configurator does not change the formatter. It's main purpose is to support the `@CodableAsISO8601` property wrapper.
 
-### ISO8601Config.SansTimeZone
+#### ISO8601Config.SansTimeZone
 
 This configurator is for the common situation where the ISO8601 string does not have the time zone specified. For example `"1997-02-22T13:00:00"`.
+
+## @CodableAsDateString<T, Configurator>
+
+Where `T: DayCodable` and `Configurator: DateStringConfigurator`. 
+
+This property wrapper handles dates stored as strings. It makes use of a custom configurator to specify the format of the date string with a number of common formats supplied.
+
+For example:
+
+```json
+{
+  "dob": "2012-12-02"
+}
+```
+
+Can be read by:
+
+```swift
+struct MyType: Codable {
+  @CodableAsDateString<Day, DateStringConfig.DMY> var dob: Day
+  // or ...
+  @CodableAsDateString<Day?, DateStringConfig.DMY> var dob: Day?
+}
+```
+
+The `DateStringConfigurator` protocol specifies only a single function which is  `static`. That function is used to configure the formatter used to read and write the date strings. 
+
+
+_Note that because Swift does not current support specifying a default type for a generic argument, `@CodableAsDateString<T, Configurator>` requires you to specify the `DayCodable` type (`Day` or `Day?`) which must match the type of the property._
+
+### Supplied date string configurators
+
+#### DateStringConfig.ISO
+
+Reads date strings that follow the ISO8601 format but don't have any time components. ie. `2012-12-01'
+
+#### DateStringConfig.DMY
+
+Reads date strings using the `dd/MM/yyyy` date format. ie. `01/12/2012'
+
+#### DateStringConfig.MDY
+
+Reads date strings using the `MM/dd/yyyy` date format. ie. `12/01/2012'
 
 # Manipulating Day types
 

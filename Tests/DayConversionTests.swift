@@ -30,7 +30,7 @@ class DayConversionTests: XCTestCase {
         let melbourneDate = day.date(timeZone: melbourne)
 
         // Get the date of the day in the GMT time zone.
-        let gmt = TimeZone(secondsFromGMT: 0)!
+        let gmt = TimeZone.gmt
         let gmtDate = day.date(timeZone: gmt)
 
         // We expect that the two points in time are different.
@@ -50,5 +50,4 @@ class DayConversionTests: XCTestCase {
         expect(gmtComponentsInGMT.day) == 1
         expect(gmtComponentsInGMT.hour) == 0
     }
-
 }
