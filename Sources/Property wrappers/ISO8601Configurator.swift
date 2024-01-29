@@ -14,7 +14,7 @@ public protocol ISO8601Configurator {
     static func configure(formatter: ISO8601DateFormatter)
 }
 
-/// USeful common configurations of ISO8601 formatters.
+/// Useful common configurations of ISO8601 formatters.
 public enum ISO8601Config {
 
     /// A default implementation that leaves the formatted untouched from it's defaults.
