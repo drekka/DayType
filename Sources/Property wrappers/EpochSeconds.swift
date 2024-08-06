@@ -9,7 +9,7 @@ import Foundation
 
 /// Identifies a ``Day`` property that reads and writes from an epoch time value expressed in seconds.
 @propertyWrapper
-public struct CodableAsEpochSeconds<T>: Codable where T: EpochCodable {
+public struct EpochSeconds<T>: Codable where T: EpochCodable {
 
     public var wrappedValue: T
 

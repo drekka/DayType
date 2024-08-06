@@ -9,7 +9,7 @@ import Foundation
 
 /// Identifies a ``Day`` property that reads and writes from date strings using a configured ``DateFormatter``.
 @propertyWrapper
-public struct CodableAsDateString<T, Configurator>: Codable where T: DateStringCodable, Configurator: DateStringConfigurator {
+public struct DateString<T, Configurator>: Codable where T: DateStringCodable, Configurator: DateStringConfigurator {
 
     public var wrappedValue: T
 

@@ -12,20 +12,20 @@ import XCTest
 // MARK: - ISO8601 Decoding
 
 private struct DateStringContainer<Configurator>: Codable where Configurator: DateStringConfigurator {
-    @CodableAsDateString<Day, Configurator> var d1: Day
+    @DateString<Day, Configurator> var d1: Day
     init(d1: Day) {
         self.d1 = d1
     }
 }
 
 private struct DateStringOptionalContainer<Configurator>: Codable where Configurator: DateStringConfigurator {
-    @CodableAsDateString<Day?, Configurator> var d1: Day?
+    @DateString<Day?, Configurator> var d1: Day?
     init(d1: Day?) {
         self.d1 = d1
     }
 }
 
-class CodableAsDateStringTests: XCTestCase {
+class DateStringTests: XCTestCase {
 
     func testDecodingISO8601DateString() throws {
         let json = #"{"d1": "2012-02-01"}"#

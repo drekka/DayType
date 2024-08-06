@@ -12,14 +12,14 @@ import Foundation
 /// By using this protocols for property wrappers we can reduce the number of wrappers needed because
 /// it erases the optional aspect of the values.
 public protocol ISO8601Codable {
-    init(iso8601Decoder decoder: Decoder, configurator: (some ISO8601Configurator).Type) throws
-    func encode(iso8601Encoder encoder: Encoder, configurator: (some ISO8601Configurator).Type) throws
+    init(iso8601Decoder decoder: Decoder, configurator: (some CustomISO8601Configurator).Type) throws
+    func encode(iso8601Encoder encoder: Encoder, configurator: (some CustomISO8601Configurator).Type) throws
 }
 
 /// Adds ``DayCodable`` to ``Day``.
 extension Day: ISO8601Codable {
 
-    public init(iso8601Decoder decoder: Decoder, configurator: (some ISO8601Configurator).Type) throws {
+    public init(iso8601Decoder decoder: Decoder, configurator: (some CustomISO8601Configurator).Type) throws {
 
         let container = try decoder.singleValueContainer()
         if let iso8601String = try? container.decode(String.self) {
@@ -35,7 +35,7 @@ extension Day: ISO8601Codable {
         throw DecodingError.dataCorrupted(context)
     }
 
-    public func encode(iso8601Encoder encoder: Encoder, configurator: (some ISO8601Configurator).Type) throws {
+    public func encode(iso8601Encoder encoder: Encoder, configurator: (some CustomISO8601Configurator).Type) throws {
         let writer = ISO8601DateFormatter()
         configurator.configure(formatter: writer)
         let iso8601String = writer.string(from: date())
@@ -47,12 +47,12 @@ extension Day: ISO8601Codable {
 /// `Day?` support which mostly just handles `nil` before calling the main ``Day`` codable code.
 extension Day?: ISO8601Codable {
 
-    public init(iso8601Decoder decoder: Decoder, configurator: (some ISO8601Configurator).Type) throws {
+    public init(iso8601Decoder decoder: Decoder, configurator: (some CustomISO8601Configurator).Type) throws {
         let container = try decoder.singleValueContainer()
         self = container.decodeNil() ? nil : try Day(iso8601Decoder: decoder, configurator: configurator)
     }
 
-    public func encode(iso8601Encoder encoder: Encoder, configurator: (some ISO8601Configurator).Type) throws {
+    public func encode(iso8601Encoder encoder: Encoder, configurator: (some CustomISO8601Configurator).Type) throws {
         if let self {
             try self.encode(iso8601Encoder: encoder, configurator: configurator)
         } else {
