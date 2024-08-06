@@ -11,20 +11,20 @@ import XCTest
 
 private struct ISO8601Container: Codable {
 
-    @CodableAsISO8601 var d1: Day
+    @ISO8601 var d1: Day
     init(d1: Day) {
         self.d1 = d1
     }
 }
 
 private struct ISO8601OptionalContainer: Codable {
-    @CodableAsISO8601 var d1: Day?
+    @ISO8601 var d1: Day?
     init(d1: Day?) {
         self.d1 = d1
     }
 }
 
-class CodableAsISO8601Tests: XCTestCase {
+class ISO8601Tests: XCTestCase {
 
     func testDecoding() throws {
         let json = #"{"d1": "2012-02-03T10:33:23+11:00"}"#
@@ -50,7 +50,7 @@ class CodableAsISO8601Tests: XCTestCase {
     }
 }
 
-class ISO8601OptionalDayDecodingTests: XCTestCase {
+class ISO8601OptionalTests: XCTestCase {
 
     func testDecoding() throws {
         let json = #"{"d1": "2012-02-03T10:33:23+11:00"}"#

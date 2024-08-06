@@ -9,7 +9,7 @@ import Foundation
 
 /// Identifies a ``Day`` property that reads and writes from an epoch time value expressed in seconds.
 @propertyWrapper
-public struct CodableAsEpochSeconds<T>: Codable where T: EpochCodable {
+public struct EpochMilliseconds<T>: Codable where T: EpochCodable {
 
     public var wrappedValue: T
 
@@ -18,10 +18,10 @@ public struct CodableAsEpochSeconds<T>: Codable where T: EpochCodable {
     }
 
     public init(from decoder: Decoder) throws {
-        wrappedValue = try T(epochDecoder: decoder, factor: 1.0)
+        wrappedValue = try T(epochDecoder: decoder, factor: 1000.0)
     }
 
     public func encode(to encoder: Encoder) throws {
-        try wrappedValue.encode(epochEncoder: encoder, factor: 1.0)
+        try wrappedValue.encode(epochEncoder: encoder, factor: 1000.0)
     }
 }

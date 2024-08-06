@@ -11,21 +11,21 @@ import XCTest
 
 // MARK: - ISO8601 Decoding
 
-private struct ISO8601CustomContainer<Configurator>: Codable where Configurator: ISO8601Configurator {
-    @CodableAsConfiguredISO8601<Day, Configurator> var d1: Day
+private struct ISO8601CustomContainer<Configurator>: Codable where Configurator: CustomISO8601Configurator {
+    @CustomISO8601<Day, Configurator> var d1: Day
     init(d1: Day) {
         self.d1 = d1
     }
 }
 
-private struct ISO8601CustomOptionalContainer<Configurator>: Codable where Configurator: ISO8601Configurator {
-    @CodableAsConfiguredISO8601<Day?, Configurator> var d1: Day?
+private struct ISO8601CustomOptionalContainer<Configurator>: Codable where Configurator: CustomISO8601Configurator {
+    @CustomISO8601<Day?, Configurator> var d1: Day?
     init(d1: Day?) {
         self.d1 = d1
     }
 }
 
-class CodableAsConfiguredISO8601Tests: XCTestCase {
+class CustomISO8601Tests: XCTestCase {
 
     func testDecodingSansTimeZone() throws {
         let json = #"{"d1": "2012-02-02T13:33:23"}"#
@@ -34,7 +34,7 @@ class CodableAsConfiguredISO8601Tests: XCTestCase {
     }
 
     func testDecodingSansTimeZoneToTimeZone() throws {
-        enum SansTimeZoneToMelbourneTimeZone: ISO8601Configurator {
+        enum SansTimeZoneToMelbourneTimeZone: CustomISO8601Configurator {
             static func configure(formatter: ISO8601DateFormatter) {
                 formatter.timeZone = TimeZone(secondsFromGMT: 11 * 60 * 60)
                 formatter.formatOptions.remove(.withTimeZone)
@@ -46,7 +46,7 @@ class CodableAsConfiguredISO8601Tests: XCTestCase {
     }
 
     func testDecodingWithTimeZoneOverridesDateTimeZone() throws {
-        enum BrazilToMelbourneTimeZone: ISO8601Configurator {
+        enum BrazilToMelbourneTimeZone: CustomISO8601Configurator {
             static func configure(formatter: ISO8601DateFormatter) {
                 formatter.timeZone = TimeZone(secondsFromGMT: 11 * 60 * 60)
             }
@@ -57,7 +57,7 @@ class CodableAsConfiguredISO8601Tests: XCTestCase {
     }
 
     func testDecodingMinimalFormat() throws {
-        enum MinimalFormat: ISO8601Configurator {
+        enum MinimalFormat: CustomISO8601Configurator {
             static func configure(formatter: ISO8601DateFormatter) {
                 formatter.timeZone = TimeZone(secondsFromGMT: 11 * 60 * 60)
                 formatter.formatOptions.insert(.withSpaceBetweenDateAndTime)
@@ -86,7 +86,7 @@ class CustomISO8601OptionalDayDecodingTests: XCTestCase {
     }
 }
 
-class ISO8601CustomDayEncodingTests: XCTestCase {
+class CustomISO8601EncodingTests: XCTestCase {
 
     func testEncoding() throws {
         let instance = ISO8601CustomContainer<ISO8601Config.SansTimeZone>(d1: Day(2012, 02, 03))
