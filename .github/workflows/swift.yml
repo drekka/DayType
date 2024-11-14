@@ -12,20 +12,14 @@ on:
 jobs:
   build:
 
-    runs-on: macos-13
+    runs-on: macos-15
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - uses: szenius/set-timezone@v1.2
       with:
           timezoneLinux: "Australia/Melbourne"
           timezoneMacos: "Australia/Melbourne"
           timezoneWindows: "Australia/Melbourne"
-    - uses: swift-actions/setup-swift@v1
-    - uses: BinaryBirds/swift-test-report@0.0.1
-    #- name: Build
-    #  run: swift build -v
-    - name: Run tests
-      run: |
-        # sudo xcode-select -s /Applications/Xcode_15.0.app
-        swift test -v
+    - run: swift test --enable-code-coverage
+    - uses: drekka/swift-coverage-action@main
