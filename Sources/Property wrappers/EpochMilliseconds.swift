@@ -1,10 +1,3 @@
-//
-//  EpochDay.swift
-//
-//
-//  Created by Derek Clarkson on 9/1/2024.
-//
-
 import Foundation
 
 /// Identifies a ``Day`` property that reads and writes from an epoch time value expressed in seconds.

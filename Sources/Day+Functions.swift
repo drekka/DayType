@@ -1,10 +1,3 @@
-//
-//  Day+Functions.swift
-//  
-//
-//  Created by Derek Clarkson on 16/1/2024.
-//
-
 import Foundation
 
 public extension Day {

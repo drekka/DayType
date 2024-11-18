@@ -1,10 +1,3 @@
-//
-//  DayCodable.swift
-//
-//
-//  Created by Derek Clarkson on 29/1/2024.
-//
-
 import Foundation
 
 /// Protocol that allows us to abstract the differences between ``Day`` and ``Day?``.

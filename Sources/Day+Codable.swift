@@ -1,10 +1,3 @@
-//
-//  Day+Codable.swift
-//
-//
-//  Created by Derek Clarkson on 9/12/2023.
-//
-
 import Foundation
 
 /// Encoding and decding stores the internal number of days since 1970 value.

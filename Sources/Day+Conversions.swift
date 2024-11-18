@@ -1,10 +1,3 @@
-//
-//  Day+Conversions.swift
-//
-//
-//  Created by Derek Clarkson on 6/12/2023.
-//
-
 import Foundation
 
 public extension Day {

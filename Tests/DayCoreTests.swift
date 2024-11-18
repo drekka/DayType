@@ -1,10 +1,3 @@
-//
-//  DayOperationsTests.swift
-//
-//
-//  Created by Derek Clarkson on 12/12/2023.
-//
-
 import DayType
 import Nimble
 import XCTest

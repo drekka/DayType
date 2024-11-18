@@ -1,10 +1,3 @@
-//
-//  DayCustomStringConvertableTests.swift
-//
-//
-//  Created by Derek Clarkson on 15/1/2024.
-//
-
 import DayType
 import Nimble
 import XCTest

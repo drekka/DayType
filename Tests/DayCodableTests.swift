@@ -1,10 +1,3 @@
-//
-//  DayCodableTests.swift
-//
-//
-//  Created by Derek Clarkson on 9/12/2023.
-//
-
 import DayType
 import Nimble
 import XCTest

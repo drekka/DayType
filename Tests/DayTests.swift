@@ -1,7 +1,3 @@
-//
-// Copyright © Derek Clarkson. All rights reserved.
-//
-
 import DayType
 import Foundation
 import Nimble

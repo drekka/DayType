@@ -1,10 +1,3 @@
-//
-//  DayConversionTests.swift
-//  
-//
-//  Created by Derek Clarkson on 6/12/2023.
-//
-
 import XCTest
 import DayType
 import Nimble

@@ -1,10 +1,3 @@
-//
-//  CustomISO8601Day.swift
-//
-//
-//  Created by Derek Clarkson on 9/1/2024.
-//
-
 import Foundation
 
 /// Identifies a ``Day`` property that reads and writes from date strings using a configured ``DateFormatter``.

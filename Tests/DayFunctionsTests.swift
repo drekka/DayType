@@ -1,10 +1,3 @@
-//
-//  DayFunctionsTests.swift
-//
-//
-//  Created by Derek Clarkson on 16/1/2024.
-//
-
 import DayType
 import Nimble
 import XCTest
