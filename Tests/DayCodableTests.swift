@@ -1,14 +1,16 @@
 import DayType
-import Nimble
-import XCTest
+import Foundation
+import Testing
 
-class DayCodableTests: XCTestCase {
+@Suite("Day is Codable")
+struct DayCodableTests {
 
-    struct DummyType: Codable {
+    private struct DummyType: Codable {
         let abc: Day
     }
 
-    func testBaseDecoding() throws {
+    @Test("Decoding")
+    func decoding() throws {
 
         let json = """
         {
@@ -18,13 +20,14 @@ class DayCodableTests: XCTestCase {
 
         let decoder = JSONDecoder()
         let day = try decoder.decode(DummyType.self, from: json.data(using: .utf8)!)
-        expect(day.abc.daysSince1970) == 19455
+        #expect(day.abc.daysSince1970 == 19455)
     }
 
-    func testEncoding() throws {
+    @Test("Encoding")
+    func encoding() throws {
         let obj = DummyType(abc: Day(daysSince1970: 19455))
         let encoder = JSONEncoder()
-        let encoded = try String(data: encoder.encode(obj), encoding: .utf8)
-        expect(encoded).to(contain("\"abc\":19455"))
+        let encoded = try #require(String(data: encoder.encode(obj), encoding: .utf8))
+        #expect(encoded == #"{"abc":19455}"#)
     }
 }
