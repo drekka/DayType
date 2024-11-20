@@ -12,7 +12,7 @@ struct DayOperationTests {
 
     @Test("-")
     func minus() {
-        #expect((Day(daysSince1970: 19445 - 5).daysSince1970) == 19440)
+        #expect((Day(daysSince1970: 19445) - 5).daysSince1970 == 19440)
     }
 
     @Test("+=")

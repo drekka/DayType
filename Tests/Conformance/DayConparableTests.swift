@@ -2,32 +2,7 @@ import DayType
 import Foundation
 import Testing
 
-@Suite("Protocol conformance")
-struct DayProtocols {
-
-    @Test("Hash")
-    func hash() {
-        var days: Set = [Day(2020, 01, 11), Day(2020, 01, 12)]
-
-        #expect(days.contains(Day(2020, 01, 13)) == false)
-        #expect(days.contains(Day(2020, 01, 12)) == true)
-
-        // Modify and try again.
-        days.insert(Day(2020, 01, 13))
-        #expect(days.count == 3)
-        #expect(days.contains(Day(2020, 01, 13)) == true)
-        #expect(days.contains(Day(2020, 01, 12)) == true)
-
-        // Duplicate check.
-        days.insert(Day(2020, 01, 11))
-        #expect(days.count == 3)
-    }
-
-    @Test("Equatble")
-    func equals() {
-        #expect(Day(2020, 3, 12) == Day(2020, 3, 12))
-        #expect(Day(2020, 3, 12) != Day(2001, 1, 5))
-    }
+extension ProtocolConformanceSuites {
 
     @Suite("Comparable")
     struct DayComparableTests {
