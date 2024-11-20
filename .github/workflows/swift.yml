@@ -24,4 +24,5 @@ jobs:
     - run: swift test --enable-code-coverage
     - uses: drekka/swift-coverage-action@v1.3
       with:
+        coverage: 90
         show-all-files: true
