@@ -16,7 +16,7 @@ public enum ISO8601Config {
         public static func configure(formatter _: ISO8601DateFormatter) {}
     }
 
-    /// Removes the time zone element from the string.
+    /// Tells the formatter to ignores timezone values.
     public enum SansTimeZone: CustomISO8601Configurator {
         public static func configure(formatter: ISO8601DateFormatter) {
             formatter.formatOptions.remove(.withTimeZone)

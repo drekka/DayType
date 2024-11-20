@@ -12,7 +12,6 @@ let package = Package(
         .library(name: "DayType", targets: ["DayType"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/quick/nimble", from: "11.0.0"),
     ],
     targets: [
         .target(
@@ -23,7 +22,6 @@ let package = Package(
             name: "DayTypeTests",
             dependencies: [
                 "DayType",
-                .product(name: "Nimble", package: "nimble"),
             ],
             path: "Tests"
         ),
