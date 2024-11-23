@@ -4,7 +4,7 @@ import Testing
 
 extension ProtocolConformanceSuites {
 
-    @Suite("Day is Codable")
+    @Suite("Codable")
     struct DayCodableTests {
 
         private struct DummyType: Codable {

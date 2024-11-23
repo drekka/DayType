@@ -4,7 +4,7 @@ import Testing
 
 extension ProtocolConformanceSuites {
 
-    @Suite("Day Stridable tests")
+    @Suite("Stridable")
     struct DayStrideableTests {
 
         @Test("In a for loop with an open range")

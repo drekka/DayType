@@ -11,10 +11,10 @@ public struct EpochMilliseconds<T>: Codable where T: EpochCodable {
     }
 
     public init(from decoder: Decoder) throws {
-        wrappedValue = try T(epochDecoder: decoder, factor: 1000.0)
+        wrappedValue = try T(epochDecoder: decoder, withMilliseconds: true)
     }
 
     public func encode(to encoder: Encoder) throws {
-        try wrappedValue.encode(epochEncoder: encoder, factor: 1000.0)
+        try wrappedValue.encode(epochEncoder: encoder, withMilliseconds: true)
     }
 }
