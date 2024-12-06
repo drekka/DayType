@@ -1,13 +1,13 @@
 ![Calendar](media/Calendar.png)
 # DayType
 
-_An API for dates that doesn't involve hours, minutes, seconds and timezones._
+_An API for dates and nothing else. No Calendars, timezones, hours, minutes or seconds. Just dates._
 
-Swift provides excellent date support through it's `Date`, `Calendar`, `TimeZone` and other types. However there's a catch, they're all designed to with with specific points in time rather than the generalisations people often use. 
+Swift provides excellent date support through it's `Date`, `Calendar`, `TimeZone` and other types. However there's a catch, they're all designed to work with specific points in time. Not the generalisations that people often use. 
 
-For example, the APIS cannot refer to a person's birthday without anchoring it to a specific hour, minute, second and even partial second within a specific timezone. Yet people when discussion a person's birthday only think of the date in whatever timezone they are in. Not the exact moment of a person's birth which sometime's even the person being discussed doesn't know.The same goes for other dates people often work with, an employee leave, religious holidays, retail sales, festivals, etc all typically have a date associated, but not a time.
+For example, you cannot just refer to a person's birthday date without anchoring it to a specific time. In a specific timezone. But people don't consider that and they often don't even know. Just referring to the date in whatever timezone they are in. The same goes for a variety of other dates. Employment leave, religious holidays, retail sales, festivals, etc. All often referred to by date only.
 
-As a result developers often find themselves writing code to strip time from Swift's `Date` in order to trick it into acting like a date. Often with mixed results as there are many technical issues to consider when coercing a point in time to such a generalisation. Especially with time zones and sometime questionable input from external sources.
+As a result developers often find themselves writing code to strip time from Swift's `Date` and trying to manipulate the results to allow for timezones. Often with mixed results as there are all sorts of technical issues to consider when coercing a point in time to such a generalisation. Especially with time zones and sometime questionable input from external sources.
 
 `DayType` provides simplify date handling through it's `Day` type. A `Day` is a representation of a 24 hours period instead of a specific point in time. ie. it doesn't have any hours, minutes, timezones, etc. This allows date code to be simpler because the developer no longer needs to sanitise time components, and that removes the angst of accidental bugs as well as making date based code considerably simpler.
 

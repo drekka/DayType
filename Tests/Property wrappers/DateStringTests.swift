@@ -18,49 +18,49 @@ extension PropertyWrapperSuites {
         @Test("ISO8601 date decoding")
         func decodingAnISO8601Date() throws {
             let json = #"{"d1": "2012-02-01"}"#
-            let result = try JSONDecoder().decode(DayContainer<DateStringConfig.ISO>.self, from: json.data(using: .utf8)!)
+            let result = try JSONDecoder().decode(DayContainer<DateFormatterConfig.ISO>.self, from: json.data(using: .utf8)!)
             #expect(result.d1 == Day(2012, 02, 01))
         }
 
         @Test("DMY date decoding")
         func decodingADMYDate() throws {
             let json = #"{"d1": "01/02/2012"}"#
-            let result = try JSONDecoder().decode(DayContainer<DateStringConfig.DMY>.self, from: json.data(using: .utf8)!)
+            let result = try JSONDecoder().decode(DayContainer<DateFormatterConfig.DMY>.self, from: json.data(using: .utf8)!)
             #expect(result.d1 == Day(2012, 02, 01))
         }
 
         @Test("MDY date decoding")
         func decodingAMDYDate() throws {
             let json = #"{"d1": "02/01/2012"}"#
-            let result = try JSONDecoder().decode(DayContainer<DateStringConfig.MDY>.self, from: json.data(using: .utf8)!)
+            let result = try JSONDecoder().decode(DayContainer<DateFormatterConfig.MDY>.self, from: json.data(using: .utf8)!)
             #expect(result.d1 == Day(2012, 02, 01))
         }
 
         @Test("Optional ISO8601 date decoding")
         func decodingAnIOptionalISO8601Date() throws {
             let json = #"{"d1": "2012-02-01"}"#
-            let result = try JSONDecoder().decode(OptionalDayContainer<DateStringConfig.ISO>.self, from: json.data(using: .utf8)!)
+            let result = try JSONDecoder().decode(OptionalDayContainer<DateFormatterConfig.ISO>.self, from: json.data(using: .utf8)!)
             #expect(result.d1 == Day(2012, 02, 01))
         }
 
         @Test("DMY date")
         func decodingAnOptionalDMYDate() throws {
             let json = #"{"d1": "01/02/2012"}"#
-            let result = try JSONDecoder().decode(OptionalDayContainer<DateStringConfig.DMY>.self, from: json.data(using: .utf8)!)
+            let result = try JSONDecoder().decode(OptionalDayContainer<DateFormatterConfig.DMY>.self, from: json.data(using: .utf8)!)
             #expect(result.d1 == Day(2012, 02, 01))
         }
 
         @Test("MDY date decoding")
         func decodingAnOptionalMDYDate() throws {
             let json = #"{"d1": "02/01/2012"}"#
-            let result = try JSONDecoder().decode(OptionalDayContainer<DateStringConfig.MDY>.self, from: json.data(using: .utf8)!)
+            let result = try JSONDecoder().decode(OptionalDayContainer<DateFormatterConfig.MDY>.self, from: json.data(using: .utf8)!)
             #expect(result.d1 == Day(2012, 02, 01))
         }
 
         @Test("Nil date decoding")
         func decodingANilDate() throws {
             let json = #"{"d1": null}"#
-            let result = try JSONDecoder().decode(OptionalDayContainer<DateStringConfig.DMY>.self, from: json.data(using: .utf8)!)
+            let result = try JSONDecoder().decode(OptionalDayContainer<DateFormatterConfig.DMY>.self, from: json.data(using: .utf8)!)
             #expect(result.d1 == nil)
         }
 
@@ -68,7 +68,7 @@ extension PropertyWrapperSuites {
         func decodingInvalidDateThrows() throws {
             do {
                 let json = #"{"d1": "xxx"}"#
-                _ = try JSONDecoder().decode(OptionalDayContainer<DateStringConfig.DMY>.self, from: json.data(using: .utf8)!)
+                _ = try JSONDecoder().decode(OptionalDayContainer<DateFormatterConfig.DMY>.self, from: json.data(using: .utf8)!)
                 Issue.record("Error not thrown")
             } catch DecodingError.dataCorrupted(let context) {
                 #expect(context.codingPath.map(\.stringValue) == ["d1"])
@@ -80,7 +80,7 @@ extension PropertyWrapperSuites {
 
         @Test("DMY date encoding")
         func encodingDateString() throws {
-            let instance = DayContainer<DateStringConfig.DMY>(d1: Day(2012, 02, 01))
+            let instance = DayContainer<DateFormatterConfig.DMY>(d1: Day(2012, 02, 01))
             let encoder = JSONEncoder()
             encoder.outputFormatting = .withoutEscapingSlashes
             let result = try encoder.encode(instance)
@@ -89,7 +89,7 @@ extension PropertyWrapperSuites {
 
         @Test("Optional DMY date encoding")
         func encodingOptionalDateString() throws {
-            let instance = OptionalDayContainer<DateStringConfig.DMY>(d1: Day(2012, 02, 01))
+            let instance = OptionalDayContainer<DateFormatterConfig.DMY>(d1: Day(2012, 02, 01))
             let encoder = JSONEncoder()
             encoder.outputFormatting = .withoutEscapingSlashes
             let result = try encoder.encode(instance)
@@ -98,7 +98,7 @@ extension PropertyWrapperSuites {
 
         @Test("Optional DMY date encoding from a nil")
         func encodingOptionalDateStringWithNil() throws {
-            let instance = OptionalDayContainer<DateStringConfig.DMY>(d1: nil)
+            let instance = OptionalDayContainer<DateFormatterConfig.DMY>(d1: nil)
             let encoder = JSONEncoder()
             encoder.outputFormatting = .withoutEscapingSlashes
             let result = try encoder.encode(instance)

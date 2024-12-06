@@ -7,8 +7,13 @@ public protocol DateStringConfigurator {
     static func configure(formatter: DateFormatter)
 }
 
+public extension DateStringConfigurator {
+
+    static var ISO: DateStringConfigurator.Type { DateFormatterConfig.ISO.self }
+}
+
 /// Useful common configurations of date formatters.
-public enum DateStringConfig {
+public enum DateFormatterConfig {
 
     public enum ISO: DateStringConfigurator {
         public static func configure(formatter: DateFormatter) {
@@ -26,5 +31,11 @@ public enum DateStringConfig {
         public static func configure(formatter: DateFormatter) {
             formatter.dateFormat = "MM/dd/yyyy"
         }
+    }
+}
+
+struct ISO: DateStringConfigurator {
+    public static func configure(formatter: DateFormatter) {
+        formatter.dateFormat = "yyyy-MM-dd"
     }
 }
