@@ -7,9 +7,9 @@ Swift provides excellent date support through it's `Date`, `Calendar`, `TimeZone
 
 For example, you cannot just refer to a person's birthday date without anchoring it to a specific time. In a specific timezone. But people don't consider that and they often don't even know. Just referring to the date in whatever timezone they are in. The same goes for a variety of other dates. Employment leave, religious holidays, retail sales, festivals, etc. All often referred to by date only.
 
-As a result developers often find themselves writing code to strip time from Swift's `Date` and trying to manipulate the results to allow for timezones. Often with mixed results as there are all sorts of technical issues to consider when coercing a point in time to such a generalisation. Especially with time zones and sometime questionable input from external sources.
+As a result developers often find themselves stripping the time and timezone components from Swift's `Date`. Often with mixed results as there are a number of complexities to consider when coercing a point in time to a generalisation. Especially when considering time zones and often questionable input from external sources.
 
-`DayType` provides simplify date handling through it's `Day` type. A `Day` is a representation of a 24 hours period instead of a specific point in time. ie. it doesn't have any hours, minutes, timezones, etc. This allows date code to be simpler because the developer no longer needs to sanitise time components, and that removes the angst of accidental bugs as well as making date based code considerably simpler.
+`DayType` provides simplify date handling through a new type called `Day`. That being a representation of a 24 hours period which is indenpendant of any timezone and not anchored to a specific point in time. ie. there's no hours, minutes, timezones, etc. This allows date code to be simpler because as a developer you no longer needs to sanitise or adjust time components. which alleviates the angst of accidental bugs as well as making the code considerably simpler.
 
 ## Installation
 
