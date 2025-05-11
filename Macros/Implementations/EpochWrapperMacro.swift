@@ -30,7 +30,7 @@ struct EpochWrapperMacro: DeclarationMacro {
                 }
 
                 public func encode(to encoder: Encoder) throws {
-                    try wrappedValue.encode(using: encoder, milliseconds: \(raw: milliseconds))
+                    try wrappedValue.encode(using: encoder, milliseconds: \(raw: milliseconds), writeNulls: false)
                 }
             }
             """,

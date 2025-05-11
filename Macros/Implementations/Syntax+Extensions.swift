@@ -4,6 +4,10 @@ import SwiftSyntaxMacros
 
 extension AttributeSyntax.Arguments {
 
+    func argumentValue(_ key: String) -> String? {
+        asLabeledExpressionList?.argumentValue(key)
+    }
+
     func stringArgumentValue(_ key: String) -> String? {
         asLabeledExpressionList?.stringArgumentValue(key)
     }

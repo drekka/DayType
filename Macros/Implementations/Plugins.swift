@@ -4,9 +4,10 @@ import SwiftSyntaxMacros
 @main
 struct MyMacroPlugin: CompilerPlugin {
     let providingMacros: [Macro.Type] = [
-        CodableWrapperMacro.self,
+        DayStringBuiltinPropertyWrapperMacro.self,
         EpochWrapperMacro.self,
         ISO8601WrapperMacro.self,
-        OptionalDayCodableMacro.self
+        KeyedContainerDecodeMissingMacro.self,
+        KeyedContainerEncodeMissingMacro.self
     ]
 }

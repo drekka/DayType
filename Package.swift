@@ -20,7 +20,6 @@ let package = Package(
         .target(
             name: "DayType",
             dependencies: [
-                .product(name: "SwiftSyntax", package: "swift-syntax"),
                 "DayTypeMacros",
             ],
             path: "Sources"
@@ -28,7 +27,6 @@ let package = Package(
         .target(
             name: "DayTypeMacros",
             dependencies: [
-                .product(name: "SwiftSyntax", package: "swift-syntax"),
                 "DayTypeMacroImplementations",
             ],
             path: "Macros/Module"

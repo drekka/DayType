@@ -20,6 +20,8 @@ struct ISO8601WrapperMacro: DeclarationMacro {
             public struct \(raw: typeName): Codable {
 
                 public var wrappedValue: DayType
+                // We need the formatter so that optional property wrappers can write day strings.
+                var formatter = \(raw: formatter)
 
                 public init(wrappedValue: DayType) {
                     self.wrappedValue = wrappedValue
@@ -30,7 +32,7 @@ struct ISO8601WrapperMacro: DeclarationMacro {
                 }
 
                 public func encode(to encoder: Encoder) throws {
-                    try wrappedValue.encode(using: encoder, formatter: \(raw: formatter))
+                    try wrappedValue.encode(using: encoder, formatter: \(raw: formatter), writeNulls: false)
                 }
             }
             """,
