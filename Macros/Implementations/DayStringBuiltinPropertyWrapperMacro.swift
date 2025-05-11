@@ -46,12 +46,11 @@ struct DayStringBuiltinPropertyWrapperMacro: MemberMacro {
             }
 
             public init(from decoder: Decoder) throws {
-                wrappedValue = try DayType.decode(from: try decoder.singleValueContainer(), formatter: \(formatter))
+                wrappedValue = try DayType.decode(from: try decoder, formatter: \(formatter))
             }
 
             public func encode(to encoder: Encoder) throws {
-                var container = encoder.singleValueContainer()
-                try wrappedValue.encode(into: &container, formatter: \(formatter), writeNulls: \(writeNulls))
+                try wrappedValue.encode(into: encoder, formatter: \(formatter), writeNulls: \(writeNulls))
             }
         }
         """
