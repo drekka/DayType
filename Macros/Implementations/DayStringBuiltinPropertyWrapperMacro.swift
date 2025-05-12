@@ -31,12 +31,13 @@ struct DayStringBuiltinPropertyWrapperMacro: MemberMacro {
     private static func propertyWrapper(name: String, formatter: String, withNullableImplementation: Bool) -> String {
         let writeNulls = withNullableImplementation ? "false" : "true"
         return """
-        @propertyWrapper 
+        @propertyWrapper
         public struct \(name): Codable {
 
-            \(withNullableImplementation ? propertyWrapper(name: "WritesNulls", formatter: formatter, withNullableImplementation: false) : "")
+            \(withNullableImplementation ? propertyWrapper(name: "Nullable", formatter: formatter, withNullableImplementation: false) : "")
 
             public var wrappedValue: DayType
+        
             // We need to expose these values so keyed containers can access them.
             let formatter = \(formatter)
             let writeNulls = \(writeNulls)
@@ -46,7 +47,7 @@ struct DayStringBuiltinPropertyWrapperMacro: MemberMacro {
             }
 
             public init(from decoder: Decoder) throws {
-                wrappedValue = try DayType.decode(from: try decoder, formatter: \(formatter))
+                wrappedValue = try DayType.decode(from: decoder, formatter: \(formatter))
             }
 
             public func encode(to encoder: Encoder) throws {

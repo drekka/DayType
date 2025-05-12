@@ -1,0 +1,24 @@
+{
+  "configurations" : [
+    {
+      "id" : "F28B9C65-0AA9-4599-8E55-40AEEF5A8B41",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "DayTypeTests",
+        "name" : "DayTypeTests"
+      }
+    }
+  ],
+  "version" : 1
+}

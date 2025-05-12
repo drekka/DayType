@@ -2,7 +2,7 @@ import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-struct KeyedContainerEncodeMissingMacro: MemberMacro {
+struct KeyedContainerEncodeMissingEpochMacro: MemberMacro {
 
     static func expansion(
         of node: AttributeSyntax,
@@ -26,11 +26,10 @@ struct KeyedContainerEncodeMissingMacro: MemberMacro {
 
         return [
             """
-            /// Encioding must be handled by the keyed container or we end up writing keys with missing values.
+            /// Encoding must be handled by the keyed container or we end up writing keys with missing values.
             public mutating func encode(_ propertyWrapper: \(raw: encodableType), forKey key: Key) throws {
-                // If there is a value then use the property wrappers to convert it to a string and write that.
                 if let value = propertyWrapper.wrappedValue {
-                    try self.encode(propertyWrapper.formatter.string(from: value.date()), forKey: key)
+                    try self.encode(value.date().timeIntervalSince1970 * (propertyWrapper.milliseconds ? 1000 : 1), forKey: key)
                 } else if propertyWrapper.writeNulls {
                     try self.encodeNil(forKey: key)
                 }

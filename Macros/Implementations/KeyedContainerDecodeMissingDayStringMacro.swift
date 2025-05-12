@@ -2,7 +2,7 @@ import SwiftDiagnostics
 import SwiftSyntax
 import SwiftSyntaxMacros
 
-struct KeyedContainerDecodeMissingMacro: MemberMacro {
+struct KeyedContainerDecodeMissingDayStringMacro: MemberMacro {
 
     static func expansion(
         of node: AttributeSyntax,

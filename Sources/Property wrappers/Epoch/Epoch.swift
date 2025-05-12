@@ -1,7 +1,14 @@
 import Foundation
 import DayTypeMacros
 
-public enum Epoch<DayType> where DayType: EpochCodable {
-    #epochCodablePropertyWrapper(typeName: "Milliseconds", milliseconds: true)
-    #epochCodablePropertyWrapper(typeName: "Seconds", milliseconds: false)
-}
+@EpochPropertyWrapper(typeName: "Milliseconds", milliseconds: true)
+@EpochPropertyWrapper(typeName: "Seconds", milliseconds: false)
+public enum Epoch<DayType> where DayType: EpochCodable {}
+
+@DecodeMissingEpoch(type: Epoch<Day?>.Milliseconds.self)
+@DecodeMissingEpoch(type: Epoch<Day?>.Seconds.self)
+extension KeyedDecodingContainer {}
+
+@EncodeMissingEpoch(type: Epoch<Day?>.Milliseconds.self)
+@EncodeMissingEpoch(type: Epoch<Day?>.Seconds.self)
+extension KeyedEncodingContainer {}
