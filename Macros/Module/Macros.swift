@@ -3,14 +3,14 @@ import Foundation
 // MARK: - Type macros
 
 @attached(member, names: arbitrary)
-public macro DayStringPropertyWrapper(name: String, formatter: DateFormatter, withNullableImplementation: Bool = true) = #externalMacro(module: "DayTypeMacroImplementations", type: "DayStringBuiltinPropertyWrapperMacro")
+public macro DayStringPropertyWrapper(name: String, formatter: DateFormatter, withNullableImplementation: Bool = true) = #externalMacro(module: "DayTypeMacroImplementations", type: "FormattedStringPropertyWrapperMacro")
+
+@attached(member, names: arbitrary)
+public macro ISO8601PropertyWrapper(name: String, formatter: ISO8601DateFormatter, withNullableImplementation: Bool = true) = #externalMacro(module: "DayTypeMacroImplementations", type: "FormattedStringPropertyWrapperMacro")
 
 // Refactor these
 @attached(member, names: arbitrary)
 public macro EpochPropertyWrapper(typeName: String, milliseconds: Bool, withNullableImplementation: Bool = true) = #externalMacro(module: "DayTypeMacroImplementations", type: "EpochPropertyWrapperMacro")
-
-@freestanding(declaration, names: arbitrary)
-public macro ios8601CodablePropertyWrapper(typeName: String, formatter: ISO8601DateFormatter) = #externalMacro(module: "DayTypeMacroImplementations", type: "ISO8601WrapperMacro")
 
 // MARK: - Common macros
 

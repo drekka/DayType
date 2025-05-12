@@ -4,7 +4,7 @@ import SwiftSyntaxBuilder
 import SwiftSyntaxMacros
 
 /// Adds a static embedeed type for encoding and decoding using a passed formatter.
-struct DayStringBuiltinPropertyWrapperMacro: MemberMacro {
+struct FormattedStringPropertyWrapperMacro: MemberMacro {
 
     static func expansion(
         of node: AttributeSyntax,
