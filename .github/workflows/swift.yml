@@ -22,7 +22,7 @@ jobs:
           timezoneMacos: "Australia/Melbourne"
           timezoneWindows: "Australia/Melbourne"
     - run: swift test --enable-code-coverage
-    - uses: drekka/swift-coverage-action@v1
+    - uses: drekka/swift-coverage-action@v1.4
       with:
         coverage: 90
         show-all-files: true
