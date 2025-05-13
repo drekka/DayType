@@ -1,119 +1,122 @@
-//
-//  DayCodableTests.swift
-//
-//
-//  Created by Derek Clarkson on 9/12/2023.
-//
-
 import DayType
-import Nimble
-import XCTest
+import Foundation
+import Testing
 
-// MARK: - ISO8601 Decoding
-
-private struct DateStringContainer<Configurator>: Codable where Configurator: DateStringConfigurator {
-    @DateString<Day, Configurator> var d1: Day
-    init(d1: Day) {
-        self.d1 = d1
-    }
+private struct DayContainer: Codable {
+    @DayString.DMY var dmy: Day
+    @DayString.MDY var mdy: Day
+    @DayString.YMD var ymd: Day
 }
 
-private struct DateStringOptionalContainer<Configurator>: Codable where Configurator: DateStringConfigurator {
-    @DateString<Day?, Configurator> var d1: Day?
-    init(d1: Day?) {
-        self.d1 = d1
-    }
+private struct DayOptionalContainer: Codable {
+    @DayString.DMY var dmy: Day?
+    @DayString.MDY var mdy: Day?
+    @DayString.YMD var ymd: Day?
 }
 
-class DateStringTests: XCTestCase {
-
-    func testDecodingISO8601DateString() throws {
-        let json = #"{"d1": "2012-02-01"}"#
-        let result = try JSONDecoder().decode(DateStringContainer<DateStringConfig.ISO>.self, from: json.data(using: .utf8)!)
-        expect(result.d1) == Day(2012, 02, 01)
-    }
-
-    func testDecodingAustralianDateStrings() throws {
-        let json = #"{"d1": "01/02/2012"}"#
-        let result = try JSONDecoder().decode(DateStringContainer<DateStringConfig.DMY>.self, from: json.data(using: .utf8)!)
-        expect(result.d1) == Day(2012, 02, 01)
-    }
-
-    func testDecodingAmericanDateStrings() throws {
-        let json = #"{"d1": "02/01/2012"}"#
-        let result = try JSONDecoder().decode(DateStringContainer<DateStringConfig.MDY>.self, from: json.data(using: .utf8)!)
-        expect(result.d1) == Day(2012, 02, 01)
-    }
+private struct DayOptionalNullContainer: Codable {
+    @DayString.DMY.Nullable var dmy: Day?
+    @DayString.MDY.Nullable var mdy: Day?
+    @DayString.YMD.Nullable var ymd: Day?
 }
 
-class CodableAsDateStroingOptionalTests: XCTestCase {
+extension PropertyWrapperSuites {
 
-    func testDecodingISO8601DateString() throws {
-        let json = #"{"d1": "2012-02-01"}"#
-        let result = try JSONDecoder().decode(DateStringOptionalContainer<DateStringConfig.ISO>.self, from: json.data(using: .utf8)!)
-        expect(result.d1) == Day(2012, 02, 01)
-    }
+    @Suite("@DayString")
+    struct DateStringTests {
 
-    func testDecodingAustralianDateStrings() throws {
-        let json = #"{"d1": "01/02/2012"}"#
-        let result = try JSONDecoder().decode(DateStringOptionalContainer<DateStringConfig.DMY>.self, from: json.data(using: .utf8)!)
-        expect(result.d1) == Day(2012, 02, 01)
-    }
+        @Test("Decoding date strings")
+        func decodingDates() throws {
+            let json = #"{"dmy": "01/02/2012", "mdy": "02/01/2012", "ymd": "2012-02-01"}"#
+            let result = try JSONDecoder().decode(DayContainer.self, from: json.data(using: .utf8)!)
+            let expectedDate = Day(2012, 02, 01)
+            #expect(result.dmy == expectedDate)
+            #expect(result.mdy == expectedDate)
+            #expect(result.ymd == expectedDate)
+        }
 
-    func testDecodingAmericanDateStrings() throws {
-        let json = #"{"d1": "02/01/2012"}"#
-        let result = try JSONDecoder().decode(DateStringOptionalContainer<DateStringConfig.MDY>.self, from: json.data(using: .utf8)!)
-        expect(result.d1) == Day(2012, 02, 01)
-    }
+        @Test("Optional date string decoding")
+        func decodingOptionalDates() throws {
+            let json = #"{"dmy": "01/02/2012", "mdy": "02/01/2012", "ymd": "2012-02-01"}"#
+            let result = try JSONDecoder().decode(DayOptionalContainer.self, from: json.data(using: .utf8)!)
+            let expectedDate = Day(2012, 02, 01)
+            #expect(result.dmy == expectedDate)
+            #expect(result.mdy == expectedDate)
+            #expect(result.ymd == expectedDate)
+        }
 
-    func testDecodingNilAustralianDateStrings() throws {
-        let json = #"{"d1": null}"#
-        let result = try JSONDecoder().decode(DateStringOptionalContainer<DateStringConfig.DMY>.self, from: json.data(using: .utf8)!)
-        expect(result.d1) == nil
-    }
+        @Test("Optional nil decoding")
+        func decodingOptionalNilDates() throws {
+            let json = #"{"dmy": null, "mdy": null, "ymd": null}"#
+            let result = try JSONDecoder().decode(DayOptionalContainer.self, from: json.data(using: .utf8)!)
+            #expect(result.dmy == nil)
+            #expect(result.mdy == nil)
+            #expect(result.ymd == nil)
+        }
 
-    func testDecodingInvalidAustralianDateStringsThrows() throws {
+        @Test("Optional missing decoding")
+        func decodingOptionalMissingDates() throws {
+            let json = #"{}"#
+            let result = try JSONDecoder().decode(DayOptionalContainer.self, from: json.data(using: .utf8)!)
+            #expect(result.dmy == nil)
+            #expect(result.mdy == nil)
+            #expect(result.ymd == nil)
+        }
 
-        let json = #"{"d1": "xxx"}"#
-        let decoder = JSONDecoder()
-        expect(try decoder.decode(DateStringOptionalContainer<DateStringConfig.DMY>.self, from: json.data(using: .utf8)!))
-            .to(throwError { error in
-                guard case DecodingError.dataCorrupted(let context) = error else {
-                    fail("Incorrect error \(error)")
-                    return
-                }
-                expect(context.codingPath.map { $0.stringValue }) == ["d1"]
-                expect(context.debugDescription) == "Unable to read the date string."
-            })
-    }
-}
+        @Test("Invalid date string decoding throws an error")
+        func decodingInvalidDateThrows() throws {
+            do {
+                let json = #"{"dmy": "xxx"}"#
+                _ = try JSONDecoder().decode(DayOptionalContainer.self, from: json.data(using: .utf8)!)
+                Issue.record("Error not thrown")
+            } catch DecodingError.dataCorrupted(let context) {
+                #expect(context.codingPath.map(\.stringValue) == ["dmy"])
+                #expect(context.debugDescription == "Unable to read the date string.")
+            } catch {
+                Issue.record("Unexpected error: \(error)")
+            }
+        }
 
-class CodableAsDateStringEncodingTests: XCTestCase {
+        @Test("Date string encoding")
+        func encodingDateStrings() throws {
+            let day = Day(2012, 02, 01)
+            let instance = DayContainer(dmy: day, mdy: day, ymd: day)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
+            let result = try encoder.encode(instance)
+            let json = String(data: result, encoding: .utf8)!
+            #expect(json == #"{"dmy":"01/02/2012","mdy":"02/01/2012","ymd":"2012-02-01"}"#)
+        }
 
-    func testEncoding() throws {
-        let instance = DateStringContainer<DateStringConfig.DMY>(d1: Day(2012, 02, 01))
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .withoutEscapingSlashes
-        let result = try encoder.encode(instance)
-        expect(String(data: result, encoding: .utf8)!) == #"{"d1":"01/02/2012"}"#
-    }
-}
+        @Test("Optional date string encoding")
+        func encodingOptionalDateStrings() throws {
+            let day = Day(2012, 02, 01)
+            let instance = DayOptionalContainer(dmy: day, mdy: day, ymd: day)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
+            let result = try encoder.encode(instance)
+            let json = String(data: result, encoding: .utf8)!
+            #expect(json == #"{"dmy":"01/02/2012","mdy":"02/01/2012","ymd":"2012-02-01"}"#)
+        }
 
-class CodableAsDateStringOptionalTests: XCTestCase {
+        @Test("Optional date encoding nil")
+        func encodingOptionalDateStringsWithNil() throws {
+            let instance = DayOptionalContainer(dmy: nil, mdy: nil, ymd: nil)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .withoutEscapingSlashes
+            let result = try encoder.encode(instance)
+            let json = String(data: result, encoding: .utf8)!
+            #expect(json == "{}")
+        }
 
-    func testEncoding() throws {
-        let instance = DateStringOptionalContainer<DateStringConfig.DMY>(d1: Day(2012, 02, 01))
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .withoutEscapingSlashes
-        let result = try encoder.encode(instance)
-        expect(String(data: result, encoding: .utf8)!) == #"{"d1":"01/02/2012"}"#
-    }
-
-    func testEncodingNil() throws {
-        let instance = DateStringOptionalContainer<DateStringConfig.DMY>(d1: nil)
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = .withoutEscapingSlashes
-        let result = try encoder.encode(instance)
-        expect(String(data: result, encoding: .utf8)!) == #"{"d1":null}"#
+        @Test("Optional date encoding nil -> null")
+        func encodingOptionalDateStringsWithNilToNull() throws {
+            let instance = DayOptionalNullContainer(dmy: nil, mdy: nil, ymd: nil)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
+            let result = try encoder.encode(instance)
+            let json = String(data: result, encoding: .utf8)!
+            #expect(json == #"{"dmy":null,"mdy":null,"ymd":null}"#)
+        }
     }
 }

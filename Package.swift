@@ -1,5 +1,6 @@
-// swift-tools-version:5.7
+// swift-tools-version:5.10
 
+import CompilerPluginSupport
 import PackageDescription
 
 let package = Package(
@@ -10,20 +11,41 @@ let package = Package(
     ],
     products: [
         .library(name: "DayType", targets: ["DayType"]),
+        .library(name: "DayTypeMacros", targets: ["DayTypeMacros"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/quick/nimble", from: "11.0.0"),
+        .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "600.0.0-latest"),
     ],
     targets: [
         .target(
             name: "DayType",
+            dependencies: [
+                "DayTypeMacros",
+            ],
             path: "Sources"
+        ),
+        .target(
+            name: "DayTypeMacros",
+            dependencies: [
+                "DayTypeMacroImplementations",
+            ],
+            path: "Macros/Module"
+        ),
+        .macro(
+            name: "DayTypeMacroImplementations",
+            dependencies: [
+                .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
+                .product(name: "SwiftDiagnostics", package: "swift-syntax"),
+                .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
+            ],
+            path: "Macros/Implementations"
         ),
         .testTarget(
             name: "DayTypeTests",
             dependencies: [
                 "DayType",
-                .product(name: "Nimble", package: "nimble"),
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftParser", package: "swift-syntax"),
             ],
             path: "Tests"
         ),

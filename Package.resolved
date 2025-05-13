@@ -1,32 +1,15 @@
 {
+  "originHash" : "99bab288a62c38d106a0d481d77a387440627f8599eb73490986122e3076ff0c",
   "pins" : [
     {
-      "identity" : "cwlcatchexception",
+      "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mattgallagher/CwlCatchException.git",
+      "location" : "https://github.com/swiftlang/swift-syntax.git",
       "state" : {
-        "revision" : "3b123999de19bf04905bc1dfdb76f817b0f2cc00",
-        "version" : "2.1.2"
-      }
-    },
-    {
-      "identity" : "cwlpreconditiontesting",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/mattgallagher/CwlPreconditionTesting.git",
-      "state" : {
-        "revision" : "dc9af4781f2afdd1e68e90f80b8603be73ea7abc",
-        "version" : "2.2.0"
-      }
-    },
-    {
-      "identity" : "nimble",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/quick/nimble",
-      "state" : {
-        "revision" : "eb5e3d717224fa0d1f6aff3fc2c5e8e81fa1f728",
-        "version" : "11.2.2"
+        "revision" : "0687f71944021d616d34d922343dcef086855920",
+        "version" : "600.0.1"
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

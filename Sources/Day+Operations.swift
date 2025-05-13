@@ -1,10 +1,3 @@
-//
-//  Day+Operations.swift
-//
-//
-//  Created by Derek Clarkson on 11/12/2023.
-//
-
 import Foundation
 
 public extension Day {

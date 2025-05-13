@@ -1,233 +1,83 @@
 ![Calendar](media/Calendar.png)
 # DayType
 
-_An API for dates that doesn't involve hours, minutes, seconds and timezones._
+_An API for dates and nothing else. No Calendars, no timezones, no hours, minutes or seconds. **Just dates!**._
 
-Swift provides excellent date support through it's `Date`, `Calendar`, `TimeZone` and other types. However there's a catch, they're all designed to with with specific points in time rather than the generalisations people often use. 
+Sure swift provides excellent date support with it's `Date`, `Calendar`, `TimeZone` and related types. But there's a catch - they're all designed to work with a specific point in time. And that's not always how people think, and sometimes not even what we get from a server. 
 
-For example, the APIS cannot refer to a person's birthday without anchoring it to a specific hour, minute, second and even partial second within a specific timezone. Yet people when discussion a person's birthday only think of the date in whatever timezone they are in. Not the exact moment of a person's birth which sometime's even the person being discussed doesn't know.The same goes for other dates people often work with, an employee leave, religious holidays, retail sales, festivals, etc all typically have a date associated, but not a time.
+For example we never refer to a person's birthday as being a specific point in time. We don't say "Hey, it's Dave's birthday on the 29th of August at 2:14 am AEST". We simply say the 29th of August and everyone knows what we mean. But Apple's time APIs don't have that generalisation. And that means a whole lot of coding for developers whenever we need to deal in just days'. All sorts of code stripping times, adjusting for time zones, and comparing sanitized dates. All of which is easy to get wrong if you haven't done a lot of it.
 
-As a result developers often find themselves writing code to strip time from Swift's `Date` in order to trick it into acting like a date. Often with mixed results as there are many technical issues to consider when coercing a point in time to such a generalisation. Especially with time zones and sometime questionable input from external sources.
-
-`DayType` provides simplify date handling through it's `Day` type. A `Day` is a representation of a 24 hours period instead of a specific point in time. ie. it doesn't have any hours, minutes, timezones, etc. This allows date code to be simpler because the developer no longer needs to sanitise time components, and that removes the angst of accidental bugs as well as making date based code considerably simpler.
+So this is where `DayType` steps it. Basically it provides simplify date handling through a `Day` type which is a representation of a 24 hours period independant of any timezone and without hours, minutes, seconds or milliseconds. In other word a date as people think of it, and that can make your code considerably simpler.
 
 ## Installation
 
-`DayType` is a SPM package only.
+`DayType` is a SPM package only. So install it as you would install any other package.
 
-# Day
+# Introducing Day
 
-The common type you'll use is `Day`. 
+DayType's common type is `Day` and the DayType package has all sorts of code to read, create and manipulate these `Day` types. Most of which is modelled off Apple's APIs so that as much as possible it will seem familiar.  
 
 ## Initialisers
 
-`Day` has a number of convenience initialisers which are pretty self explanatory and similar to Swift's `Date` initialisers:
+A `Day` has a number of convenience initialisers. Most of which are self explanatory and similar to Swift's `Date`:
 
 ```swift
-init()
-init(daysSince1970: DayInterval)
-init(timeIntervalSince1970: TimeInterval)
-init(date: Date, usingCalendar calendar: Calendar = .current)
-init(components: DayComponents)
-init(_ year: Int, _ month: Int, _ day: Int)
-init(year: Int, month: Int, day: Int) 
+init()                                                           // Creates a `Day` based on the current time.
+init(daysSince1970: DayInterval)                                 // Creates a `Day` using the number of days since 1970.
+init(timeIntervalSince1970: TimeInterval)                        // Creates a `Day` from a `TimeInterval`. 
+init(date: Date, usingCalendar calendar: Calendar = .current)    // Creates a `Day` from a `Date` with an optional calendar.
+init(components: DayComponents)                                  // Creates a `Day` from `DayComponents`.
+init(_ year: Int, _ month: Int, _ day: Int)                      // Creates a `Day` from individual year, month and day values. Short form.
+init(year: Int, month: Int, day: Int)                            // Creates a `Day` from individual year, month and day values.
 ```
 ## Properties
 
-### .daysSince1970
+### var daysSince1970: Int { get }
 
-Literally the number of days since Swift's base date of 00:00:00 UTC on 1 January 1970. 
+Literally the number of days since Swift's base date of 00:00:00 UTC on 1 January 1970. Note this is the number of whole days, dropping any spare seconds.
 
-_Note that matches the number of days produced by this Apple API based code:_
+> Note this effective matches the number of days produced by this API code:
+> ```swift
+> let fromDate = Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0))
+> let toDate = Calendar.current.startOfDay(for: Date())
+> let numberOfDays = Calendar.current.dateComponents([.day], from: fromDate, to: toDate).day!
+> ```
 
-```swift
-let fromDate = Calendar.current.startOfDay(for: Date(timeIntervalSince1970: 0))
-let toDate = Calendar.current.startOfDay(for: Date())
-let numberOfDays = Calendar.current.dateComponents([.day], from: fromDate, to: toDate).day!
-```
+## Mathematical operators
 
-# Property wrappers 
-
-DayType's property wrappers are designed to address the mostly commonly seen issues when coding and decoding data from external sources. 
-
-_Note: Whilst all of these wrappers support both `Day` and `Day?` properties through the use of the `DayCodable` protocol, it's also technically possible to apply this protocol to other types to make them convertible to a `Day`._
-
-## @EpochSeconds
-
-Converts [epoch timestamps](https://www.epochconverter.com) to `Day`. For example the JSON data structure:
-
-```json
-{
-  "dob":856616400
-}
-```
-
-Can be read by:
+`Day` has a number of mathematical operators for adding and subtracting days from a `Day`:
 
 ```swift
-struct MyType: Codable {
-  @EpochSeconds var dob: Day // or Day?
-}
-```
 
-## @EpochMilliseconds
-
-Essentially the same as `@EpochSeconds` but expects the epoch time to be in millisecond [epoch timestamps](https://www.epochconverter.com).
-
-```json
-{
-  "dob":856616400123
-}
-```
-
-Can be read by:
-
-```swift
-struct MyType: Codable {
-  @EpochMilliseconds var dob: Day // or Day?
-}
-```
-
-## @ISO8601
-
-Converts [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) date strings to `Day`.
-
-```json
-{
-  "dob": "1997-02-22T13:00:00+11:00"
-}
-```
-
-Can be read by:
-
-```swift
-struct MyType: Codable {
-  @ISO8601 var dob: Day // or Day?
-}
-```
-
-## @CustomISO8601<T, Configurator>
-
-Where `T: DayCodable` and `Configurator: ISO8601Configurator`. 
-
-Internally `DayType` uses an `ISO8601DateFormatter` to read and write [ISO8601](https://en.wikipedia.org/wiki/ISO_8601) strings. As there are a variety of ISO8601 formats, this property wrapper allows you to pre-configure the formatter before it processes the string.
-
-```json
-{
-  "dob": "20120202 133323"
-}
-```
-
-Can be read by:
-
-```swift
-enum MinimalFormat: ISO8601Configurator {
-    static func configure(formatter: ISO8601DateFormatter) {
-        formatter.timeZone = TimeZone(secondsFromGMT: 11 * 60 * 60)
-        formatter.formatOptions.insert(.withSpaceBetweenDateAndTime)
-        formatter.formatOptions.subtract([.withTimeZone, .withColonSeparatorInTime, .withDashSeparatorInDate])    }
-}
-
-struct MyType: Codable {
-  @CustomISO8601<Day, MinimalFormat> var dob: Day
-  // or ...
-  @CustomISO8601<Day?, MinimalFormat> var dob: Day?
-}
-```
-
-The property wrapper is configured trough a `ISO8601Configurator` protocol instance. There's only one function so implementing the protocol is pretty easy.
-
-_Note that because Swift does not current support specifying a default type for a generic argument, `@CustomISO8601<T, Configurator>` requires you to specify the `DayCodable` type (`Day` or `Day?`) which must match the type of the property._
-
-### Supplied ISO8601 configurators
-
-#### ISO8601Config.Default
-
-This configurator does not change the formatter. It's main purpose is to support the `@ISO8601` property wrapper.
-
-#### ISO8601Config.SansTimeZone
-
-This configurator is for the common situation where the ISO8601 string does not have the time zone specified. For example `"1997-02-22T13:00:00"`.
-
-## @DateString<T, Configurator>
-
-Where `T: DayCodable` and `Configurator: DateStringConfigurator`. 
-
-This property wrapper handles dates stored as strings. It makes use of a custom configurator to specify the format of the date string with a number of common formats supplied.
-
-```json
-{
-  "dob": "2012-12-02"
-}
-```
-
-Can be read by:
-
-```swift
-struct MyType: Codable {
-  @DateString<Day, DateStringConfig.DMY> var dob: Day
-  // or ...
-  @DateString<Day?, DateStringConfig.DMY> var dob: Day?
-}
-```
-
-The `DateStringConfigurator` protocol specifies only a single function which is  `static`. That function is used to configure the formatter used to read and write the date strings. 
-
-
-_Note: Because Swift does not current support specifying a default type for a generic argument, `@DateString<T, Configurator>` requires you to specify the `DayCodable` type (`Day` or `Day?`)._
-
-### Supplied date string configurators
-
-#### DateStringConfig.ISO
-
-Reads date strings that follow the ISO8601 format but don't have any time components. ie. `2012-12-01'
-
-#### DateStringConfig.DMY
-
-Reads date strings using the `dd/MM/yyyy` date format. ie. `01/12/2012'
-
-#### DateStringConfig.MDY
-
-Reads date strings using the `MM/dd/yyyy` date format. ie. `12/01/2012'
-
-# Manipulating Day types
-
-`Day` has also been extended to support a variety of functions and operators. it has `+`, `-`, `+=` and `-=` operators which can be used to add or subtract a number of days from a day.
-
-```swift
+// Adding days
 let day = Day(2000,1,1) + 5 // -> 2000-01-06 
+day += 5 // -> 2000-01-11 
+
+// Subtracting days
 let day = Day(2000,1,1) - 10 // -> 1999-12-21 
+day -= 5 // -> 1999-12-16
 
-let day = Day(2000,1,1)
-day += 5 // -> 2000-01-06 
-
-let day = Day(2000,1,1)
-day -= 5 // -> 1999-12-21
-```
-
-And you can subtract one day from another to get the duration between them.
-
-```swift
+// Obtaining a duration in days
 Day(2000,1,10) - Day(2000,1,5) // -> 5 days duration. 
 ```
 
 ## Functions
 
-### .date(inCalendar:timeZone:) -> Date
+### func date(inCalendar calendar: Calendar = .current, timeZone: TimeZone? = nil) -> Date
 
-Using a passed `Calendar` and `TimeZone`, this function coverts a `Day` to a Swift `Date` with the `Day`'s year, month and day, and a time of `00:00` (midnight). With no arguments this function uses the current calendar and time zone.
+Using the passed `Calendar` and `TimeZone` this function coverts a `Day` to a Swift `Date` with the time components being set to `00:00` (midnight).
 
-### .day(byAdding:, value:) -> Day
+### func day(byAdding component: Day.Component, value: Int) -> Day
 
-Lets you add any number of years, months or days to a `Day` and get a new `day` back. This is convenient for doing things like producing a sequence of dates for the same day on each month. 
+Adds any number of years, months or days to a `Day` and returns a new `day`. This is convenient for doing things like producing a sequence of dates for the same day on each month. 
 
-### .formatted(_:) -> String
+### func formatted(_ day: Date.FormatStyle.DateStyle = .abbreviated) -> String
 
-Wrapping `Date.formatted(date:time:)` this function formats a day using the standard formatting specified by the `Date.FormatStyle.DateStyle` styles. The time component of `Date.formatted(date:time:)` is omitted.
+Uses Apple's `Date.formatted(date:time:)` function to format the day into a `String` using the formatting specified in `Date.FormatStyle.DateStyle`.
 
 # DayComponents
 
-Similar to the way `Date` has a matching `DateComponents`, `Day` has a matching `DayComponents`. In this case mostly as a convenient wrapper for passing the individual values for a year, month and day. 
+Similar to how `Date` has `DateComponents` representing the individual parts of a date and time, `Day` has `DayComponents` which contain the day's year, month and day. 
 
 # Protocol conformance
 
@@ -235,12 +85,11 @@ Similar to the way `Date` has a matching `DateComponents`, `Day` has a matching 
 
 `Day` is fully `Codable`. 
 
-It's base value is an `Int` representing the number of days since 1 January 1970 which can accessed via the `.daysSince1970` property. 
-
+When encoded or decoded it uses an `Int` representing the number of days since 1 January 1970. This value can also be accessed via the `.daysSince1970` property. 
 
 ## Equatable
 
-`Day` is `Equatable` so 
+`Day` is `Equatable` so days can be compared. Ie. 
 
 ```swift
 Day(2001,2,3) == Day(2001,2,3) // true
@@ -248,15 +97,15 @@ Day(2001,2,3) == Day(2001,2,3) // true
 
 ## Comparable
 
-`Day` is `Comparable` which lets you use all the comparable operators to compare dates. ie. `>`, `<`, `>=` and `<=`. 
+`Day` is `Comparable` which enables the comparable operators: `>`, `<`, `>=` and `<=` for comparing days.
 
 ## Hashable
 
-`Day` is `Hashable` so it can be used as dictionary keys and in sets.
+`Day` is also `Hashable` which allows it to be used as dictionary key in in a set.
 
 ## Stridable
 
-`Day` is `Stridable` which means you can use it in for loops as well as with the `stride(from:to:by:)` function.
+`Day` is `Stridable` which means you can use it in for loops as well as with the `stride(from:to:by:)` function. For example:
 
 ```swift
 for day in Day(2000,1,1)...Day(2000,1,5) {
@@ -272,6 +121,88 @@ for day in stride(from: Day(2000,1,1), to: Day(2000,1,5), by: 2) {
 }
 ```
 
+# Property wrappers
+
+DayType also provides a number of property wrappers which implement `Codable`, the intent being to allow easy conversions from all sorts of date formats that are often returned from servers.
+
+All of the supplied property wrappers can read and write both `Day` and optional `Day?` properties and are grouped by the format of the data they expect to encode and decode.
+
+## `@DayString.DMY`, `@DayString.MDY` & `@DayString.YMD`
+
+These property wrappers are designed to encode and decode dates in the `dd/mm/yyyy`, `mm/dd/yyyy` and `yyyy/mm/dd` formats. For example:
+
+```swift
+struct MyData {
+    @DayString.DMY var dmyDay: Day          // "31/04/2025"
+    @DayString.MDY var mdyDay: Day          // "04/31/2025"
+    @DayString.YMD var ymdOptionalDay: Day? // "2025/04/31"
+}
+```
+
+## `@Epoch.seconds` & `@Epoch.milliseconds`
+
+Encodes and decodes days as [epoch timestamps](https://www.epochconverter.com). For example:
+
+```swift
+struct MyData {
+    @Epoch.Seconds var optionalSeconds: Day?  // 1746059246
+    @Epoch.Milliseconds var milliseconds: Day // 1746059246123
+}
+```
+
+## `@ISO8601.Default` and `@ISO8601.SansTimezone`
+
+Encodes and decodes standard ISO8061 date strings. The only difference is that `@ISO8601.SansTimezone` is as it's name suggests, intended for reading strings written without a timezone value. For example
+
+```swift
+struct MyData {
+    @ISO8601.Default var iso8601: Day                    // "2025-04-31T12:01:00Z+12:00"
+    @ISO8601.SansTimezone var OptionalSansTimezone: Day? // "2025-04-31T12:01:00" 
+}
+```
+
+## Encoding and decoding nulls
+
+By default all of DayType's property wrappers can handle decoding where the passed value is a `null` or if there is no value at all. For example:
+
+```swift
+struct MyData {
+    @DayString.DMY var dmy: Day?
+}
+```
+
+Will read both of these JSONs, setting `dmy` to `nil`:
+
+```json
+// Null value.
+{
+    "dmy": null
+}
+
+// Missing value.
+{}
+```     
+
+When encoding DayType will skip encoding `nil` values (so producing `{}`), however some API require `null` values. In order to handle these APIs DayType provides some nested property wrappers which will write `null` values instead of skipping the keys all together. For example:
+
+```swift
+struct MyData {
+    @DayString.DMY.Nullable var dmy: Day?
+    @Epoch.Seconds.Nullable var seconds: Day?
+    @ISO8601.Default.Nullable var iso8601: Day?
+}
+```
+
+Will write the following JSON which all the properties are `nil`:
+
+```json
+{
+   "dmy": null,
+   "seconds": null,
+   "iso8601": null
+}
+```
+
 # References and thanks
 
 * Can't thank [Howard Hinnant](http://howardhinnant.github.io) enough. Using his math instead of Apple's APIs produced a significant speed boost when converting to and from years, months and days.  
@@ -279,6 +210,6 @@ for day in stride(from: Day(2000,1,1), to: Day(2000,1,5), by: 2) {
 
 # Future additions
 
-Obviously there are a large number of useful functions that can be added to this API, many of which could come from various other calculations on [http://howardhinnant.github.io/date_algorithms.html#weekday_from_days](). However I plan to add these as it becomes clear they will provide a useful addition rather than re-implementing a large number of functions that may not ben needed. 
+Obviously there are a large number of useful functions that can be added to this API, many of which could come from various other calculations on [http://howardhinnant.github.io/date_algorithms.html#weekday_from_days](). However I plan to add these as it becomes clear they will provide a useful addition rather than re-implementing a large number of functions that may not be needed. 
 
-Please feel free to drop a request for any thing you'd like added.
+Please feel free to drop a request for anything you'd like added.

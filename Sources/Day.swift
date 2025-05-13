@@ -1,7 +1,3 @@
-//
-// Copyright © Derek Clarkson. All rights reserved.
-//
-
 import Foundation
 
 /// Simple alias to help code readability.

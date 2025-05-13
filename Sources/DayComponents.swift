@@ -1,10 +1,3 @@
-//
-//  DayComponents.swift
-//
-//
-//  Created by Derek Clarkson on 5/11/2023.
-//
-
 import Foundation
 
 /// Similar to Swift's ``DateComponents`` in that it contains the individual components of a ``Day``.

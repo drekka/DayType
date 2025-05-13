@@ -1,100 +1,130 @@
-//
-//  DayCodableTests.swift
-//
-//
-//  Created by Derek Clarkson on 9/12/2023.
-//
-
 import DayType
-import Nimble
-import XCTest
+import Foundation
+import Testing
 
 private struct ISO8601Container: Codable {
-
-    @ISO8601 var d1: Day
-    init(d1: Day) {
-        self.d1 = d1
-    }
+    @ISO8601.Default var iso8601: Day
+    @ISO8601.SansTimezone var iso8601SansTimezone: Day
 }
 
 private struct ISO8601OptionalContainer: Codable {
-    @ISO8601 var d1: Day?
-    init(d1: Day?) {
-        self.d1 = d1
-    }
+    @ISO8601.Default var iso8601: Day?
+    @ISO8601.SansTimezone var iso8601SansTimezone: Day?
 }
 
-class ISO8601Tests: XCTestCase {
+private struct ISO8601OptionalNullContainer: Codable {
+    @ISO8601.Default.Nullable var iso8601: Day?
+    @ISO8601.SansTimezone.Nullable var iso8601SansTimezone: Day?
+}
 
-    func testDecoding() throws {
-        let json = #"{"d1": "2012-02-03T10:33:23+11:00"}"#
-        let result = try JSONDecoder().decode(ISO8601Container.self, from: json.data(using: .utf8)!)
-        expect(result.d1) == Day(2012, 02, 03)
-    }
+extension PropertyWrapperSuites {
 
-    func testDecodingWithDefaultGMT() throws {
-        let json = #"{"d1": "2012-02-02T13:33:23Z"}"#
-        let result = try JSONDecoder().decode(ISO8601Container.self, from: json.data(using: .utf8)!)
-        expect(result.d1) == Day(2012, 02, 03)
-    }
+    @Suite("@ISO8601")
+    struct ISO8601Tests {
 
-    func testDecodingWithInvalidStringDate() throws {
-        do {
-            let json = #"{"d1": "xxxx"}"#
-            _ = try JSONDecoder().decode(ISO8601Container.self, from: json.data(using: .utf8)!)
-            fail("Error not thrown")
-        } catch DecodingError.dataCorrupted(let context) {
-            expect(context.debugDescription) == "Unable to read a Day value, expected a valid ISO8601 string."
-            expect(context.codingPath.last?.stringValue) == "d1"
+        @Test("Decoding strings")
+        func decodingDates() throws {
+            let json = #"{"iso8601": "2012-02-01T12:00:00Z+12:00", "iso8601SansTimezone": "2012-02-01T12:00:00"}"#
+            let result = try JSONDecoder().decode(ISO8601Container.self, from: json.data(using: .utf8)!)
+            let expectedDate = Day(2012, 02, 01)
+            #expect(result.iso8601 == expectedDate)
+            #expect(result.iso8601SansTimezone == expectedDate)
         }
-    }
-}
 
-class ISO8601OptionalTests: XCTestCase {
+        @Test("Optional string decoding")
+        func decodingOptionalDates() throws {
+            let json = #"{"iso8601": "2012-02-01T12:00:00Z+12:00", "iso8601SansTimezone": "2012-02-01T12:00:00"}"#
+            let result = try JSONDecoder().decode(ISO8601OptionalContainer.self, from: json.data(using: .utf8)!)
+            let expectedDate = Day(2012, 02, 01)
+            #expect(result.iso8601 == expectedDate)
+            #expect(result.iso8601SansTimezone == expectedDate)
+        }
 
-    func testDecoding() throws {
-        let json = #"{"d1": "2012-02-03T10:33:23+11:00"}"#
-        let result = try JSONDecoder().decode(ISO8601OptionalContainer.self, from: json.data(using: .utf8)!)
-        expect(result.d1) == Day(2012, 02, 03)
-    }
+        @Test("Optional nil decoding")
+        func decodingOptionalNilDates() throws {
+            let json = #"{"ios8601": null, "iso8691SansTimezone": null}"#
+            let result = try JSONDecoder().decode(ISO8601OptionalContainer.self, from: json.data(using: .utf8)!)
+            #expect(result.iso8601 == nil)
+            #expect(result.iso8601SansTimezone == nil)
+        }
 
-    func testDecodingWithNil() throws {
-        let json = #"{"d1": null}"#
-        let result = try JSONDecoder().decode(ISO8601OptionalContainer.self, from: json.data(using: .utf8)!)
-        expect(result.d1).to(beNil())
-    }
-
-    func testDecodingWithMissingValue() throws {
-        do {
+        @Test("Optional missing decoding")
+        func decodingOptionalMissingDates() throws {
             let json = #"{}"#
-            _ = try JSONDecoder().decode(ISO8601OptionalContainer.self, from: json.data(using: .utf8)!)
-            fail("Error not thrown")
-        } catch DecodingError.keyNotFound(let key, _) {
-            expect(key.stringValue) == "d1"
+            let result = try JSONDecoder().decode(ISO8601OptionalContainer.self, from: json.data(using: .utf8)!)
+            #expect(result.iso8601 == nil)
+            #expect(result.iso8601SansTimezone == nil)
         }
-    }
-}
 
-class ISO8601DayEncodingTests: XCTestCase {
+        @Test("Invalid ISO8691 string decoding throws an error")
+        func decodingInvalidDateThrows() throws {
+            do {
+                let json = #"{"iso8601": "xxx4 5 ass3"}"#
+                _ = try JSONDecoder().decode(ISO8601OptionalContainer.self, from: json.data(using: .utf8)!)
+                Issue.record("Error not thrown")
+            } catch DecodingError.dataCorrupted(let context) {
+                #expect(context.codingPath.map(\.stringValue) == ["iso8601"])
+                #expect(context.debugDescription == "Unable to read the date string.")
+            } catch {
+                Issue.record("Unexpected error: \(error)")
+            }
+        }
 
-    func testEncoding() throws {
-        let instance = ISO8601Container(d1: Day(2012, 02, 03))
-        let result = try JSONEncoder().encode(instance)
-        expect(String(data: result, encoding: .utf8)!) == #"{"d1":"2012-02-02T13:00:00Z"}"#
-    }
-}
+        @Test("String encoding")
+        func encodingDateStrings() throws {
+            let day = Day(2012, 02, 01)
+            let instance = ISO8601Container(iso8601: day, iso8601SansTimezone: day)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
+            let result = try encoder.encode(instance)
+            let json = String(data: result, encoding: .utf8)!
+            let expectedJSON = #"{"iso8601":"\#(expectedISO8601Date())","iso8601SansTimezone":"\#(expectedISO8601SansDate())"}"#
+            #expect(json == expectedJSON)
+        }
 
-class ISO8601OptionalDayEncodingTests: XCTestCase {
+        @Test("Optional string encoding")
+        func encodingOptionalDateStrings() throws {
+            let day = Day(2012, 02, 01)
+            let instance = ISO8601OptionalContainer(iso8601: day, iso8601SansTimezone: day)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
+            let result = try encoder.encode(instance)
+            let json = String(data: result, encoding: .utf8)!
+            let expectedJSON = #"{"iso8601":"\#(expectedISO8601Date())","iso8601SansTimezone":"\#(expectedISO8601SansDate())"}"#
+            #expect(json == expectedJSON)
+        }
 
-    func testEncoding() throws {
-        let instance = ISO8601OptionalContainer(d1: Day(2012, 02, 03))
-        let result = try JSONEncoder().encode(instance)
-        expect(String(data: result, encoding: .utf8)!) == #"{"d1":"2012-02-02T13:00:00Z"}"#
-    }
+        @Test("Optional encoding nil")
+        func encodingOptionalDateStringsWithNil() throws {
+            let instance = ISO8601OptionalContainer(iso8601: nil, iso8601SansTimezone: nil)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .withoutEscapingSlashes
+            let result = try encoder.encode(instance)
+            let json = String(data: result, encoding: .utf8)!
+            #expect(json == "{}")
+        }
 
-    func testEncodingNil() throws {
-        let instance = ISO8601OptionalContainer(d1: nil)
-        let result = try JSONEncoder().encode(instance)
-        expect(String(data: result, encoding: .utf8)!) == #"{"d1":null}"#
+        @Test("Optional encoding nil -> null")
+        func encodingOptionalDateStringsWithNilToNull() throws {
+            let instance = ISO8601OptionalNullContainer(iso8601: nil, iso8601SansTimezone: nil)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
+            let result = try encoder.encode(instance)
+            let json = String(data: result, encoding: .utf8)!
+            #expect(json == #"{"iso8601":null,"iso8601SansTimezone":null}"#)
+        }
+
+        func expectedISO8601Date() -> String {
+            let today = DateComponents(calendar: .current, timeZone: .current, year: 2012, month: 2, day: 1)
+            let formatter = ISO8601DateFormatter()
+            return formatter.string(from: today.date!)
+        }
+
+        func expectedISO8601SansDate() -> String {
+            let today = DateComponents(calendar: .current, timeZone: .current, year: 2012, month: 2, day: 1)
+            let formatter = ISO8601DateFormatter()
+            formatter.formatOptions.remove(.withTimeZone)
+            return formatter.string(from: today.date!)
+        }
     }
 }
