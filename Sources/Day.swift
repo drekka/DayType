@@ -25,6 +25,9 @@ public struct Day {
 
     public let daysSince1970: Int
 
+    /// Returns a `Day` representing today.
+    public static var today: Day { Day() }
+
     // MARK: - Initialisers
 
     /// Simplest initialiser that generates a day based on today's

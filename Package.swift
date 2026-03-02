@@ -15,12 +15,14 @@ let package = Package(
     ],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "602.0.0"),
+        .package(url: "https://github.com/apple/swift-collections.git", from: "1.1.0"),
     ],
     targets: [
         .target(
             name: "DayType",
             dependencies: [
                 "DayTypeMacros",
+                .product(name: "OrderedCollections", package: "swift-collections"),
             ],
             path: "Sources"
         ),
