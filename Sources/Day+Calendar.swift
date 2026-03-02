@@ -1,5 +1,5 @@
 import Foundation
-import OrderedCollections
+@_exported import OrderedCollections
 
 /// An ordered dictionary mapping the first ``Day`` of each week to its 7-element ``CalendarDay`` array.
 public typealias CalendarDays = OrderedDictionary<Day, [CalendarDay]>
