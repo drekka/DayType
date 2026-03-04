@@ -8,31 +8,31 @@ extension ProtocolConformanceSuites {
     struct DayComparableTests {
 
         @Test(">")
-        func greaterThan() {
-            #expect((Day(2020, 3, 12) > Day(2020, 3, 11)) == true)
-            #expect((Day(2020, 3, 12) > Day(2020, 3, 12)) == false)
-            #expect((Day(2020, 3, 12) > Day(2020, 3, 13)) == false)
+        func greaterThan() throws {
+            #expect(try (Day(2020, 3, 12) > Day(2020, 3, 11)) == true)
+            #expect(try (Day(2020, 3, 12) > Day(2020, 3, 12)) == false)
+            #expect(try (Day(2020, 3, 12) > Day(2020, 3, 13)) == false)
         }
 
         @Test(">=")
-        func greaterThanEquals() {
-            #expect((Day(2020, 3, 12) >= Day(2020, 3, 11)) == true)
-            #expect((Day(2020, 3, 12) >= Day(2020, 3, 12)) == true)
-            #expect((Day(2020, 3, 12) >= Day(2020, 3, 13)) == false)
+        func greaterThanEquals() throws {
+            #expect(try (Day(2020, 3, 12) >= Day(2020, 3, 11)) == true)
+            #expect(try (Day(2020, 3, 12) >= Day(2020, 3, 12)) == true)
+            #expect(try (Day(2020, 3, 12) >= Day(2020, 3, 13)) == false)
         }
 
         @Test("<")
-        func lessThan() {
-            #expect((Day(2020, 3, 12) < Day(2020, 3, 11)) == false)
-            #expect((Day(2020, 3, 12) < Day(2020, 3, 12)) == false)
-            #expect((Day(2020, 3, 12) < Day(2020, 3, 13)) == true)
+        func lessThan() throws {
+            #expect(try (Day(2020, 3, 12) < Day(2020, 3, 11)) == false)
+            #expect(try (Day(2020, 3, 12) < Day(2020, 3, 12)) == false)
+            #expect(try (Day(2020, 3, 12) < Day(2020, 3, 13)) == true)
         }
 
         @Test("<=")
-        func lessThanEquals() {
-            #expect((Day(2020, 3, 12) <= Day(2020, 3, 11)) == false)
-            #expect((Day(2020, 3, 12) <= Day(2020, 3, 12)) == true)
-            #expect((Day(2020, 3, 12) <= Day(2020, 3, 13)) == true)
+        func lessThanEquals() throws {
+            #expect(try (Day(2020, 3, 12) <= Day(2020, 3, 11)) == false)
+            #expect(try (Day(2020, 3, 12) <= Day(2020, 3, 12)) == true)
+            #expect(try (Day(2020, 3, 12) <= Day(2020, 3, 13)) == true)
         }
     }
 }

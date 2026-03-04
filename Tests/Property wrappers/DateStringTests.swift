@@ -29,7 +29,7 @@ extension PropertyWrapperSuites {
         func decodingDates() throws {
             let json = #"{"dmy": "01/02/2012", "mdy": "02/01/2012", "ymd": "2012-02-01"}"#
             let result = try JSONDecoder().decode(DayContainer.self, from: json.data(using: .utf8)!)
-            let expectedDate = Day(2012, 02, 01)
+            let expectedDate = try Day(2012, 02, 01)
             #expect(result.dmy == expectedDate)
             #expect(result.mdy == expectedDate)
             #expect(result.ymd == expectedDate)
@@ -39,7 +39,7 @@ extension PropertyWrapperSuites {
         func decodingOptionalDates() throws {
             let json = #"{"dmy": "01/02/2012", "mdy": "02/01/2012", "ymd": "2012-02-01"}"#
             let result = try JSONDecoder().decode(DayOptionalContainer.self, from: json.data(using: .utf8)!)
-            let expectedDate = Day(2012, 02, 01)
+            let expectedDate = try Day(2012, 02, 01)
             #expect(result.dmy == expectedDate)
             #expect(result.mdy == expectedDate)
             #expect(result.ymd == expectedDate)
@@ -79,7 +79,7 @@ extension PropertyWrapperSuites {
 
         @Test("Date string encoding")
         func encodingDateStrings() throws {
-            let day = Day(2012, 02, 01)
+            let day = try Day(2012, 02, 01)
             let instance = DayContainer(dmy: day, mdy: day, ymd: day)
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
@@ -90,7 +90,7 @@ extension PropertyWrapperSuites {
 
         @Test("Optional date string encoding")
         func encodingOptionalDateStrings() throws {
-            let day = Day(2012, 02, 01)
+            let day = try Day(2012, 02, 01)
             let instance = DayOptionalContainer(dmy: day, mdy: day, ymd: day)
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]

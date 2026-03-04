@@ -26,7 +26,7 @@ extension PropertyWrapperSuites {
         func decodingDates() throws {
             let json = #"{"iso8601": "2012-02-01T12:00:00Z+12:00", "iso8601SansTimezone": "2012-02-01T12:00:00"}"#
             let result = try JSONDecoder().decode(ISO8601Container.self, from: json.data(using: .utf8)!)
-            let expectedDate = Day(2012, 02, 01)
+            let expectedDate = try Day(2012, 02, 01)
             #expect(result.iso8601 == expectedDate)
             #expect(result.iso8601SansTimezone == expectedDate)
         }
@@ -35,7 +35,7 @@ extension PropertyWrapperSuites {
         func decodingOptionalDates() throws {
             let json = #"{"iso8601": "2012-02-01T12:00:00Z+12:00", "iso8601SansTimezone": "2012-02-01T12:00:00"}"#
             let result = try JSONDecoder().decode(ISO8601OptionalContainer.self, from: json.data(using: .utf8)!)
-            let expectedDate = Day(2012, 02, 01)
+            let expectedDate = try Day(2012, 02, 01)
             #expect(result.iso8601 == expectedDate)
             #expect(result.iso8601SansTimezone == expectedDate)
         }
@@ -72,7 +72,7 @@ extension PropertyWrapperSuites {
 
         @Test("String encoding")
         func encodingDateStrings() throws {
-            let day = Day(2012, 02, 01)
+            let day = try Day(2012, 02, 01)
             let instance = ISO8601Container(iso8601: day, iso8601SansTimezone: day)
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
@@ -84,7 +84,7 @@ extension PropertyWrapperSuites {
 
         @Test("Optional string encoding")
         func encodingOptionalDateStrings() throws {
-            let day = Day(2012, 02, 01)
+            let day = try Day(2012, 02, 01)
             let instance = ISO8601OptionalContainer(iso8601: day, iso8601SansTimezone: day)
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]

@@ -5,8 +5,8 @@ import Testing
 extension ProtocolConformanceSuites {
 
     @Test("CustomStringConvertable")
-    func description() {
+    func description() throws {
         let date = DateComponents(calendar: .current, year: 2001, month: 2, day: 3).date!
-        #expect(Day(2001, 2, 3).description == date.formatted(date: .abbreviated, time: .omitted))
+        #expect(try Day(2001, 2, 3).description == date.formatted(date: .abbreviated, time: .omitted))
     }
 }

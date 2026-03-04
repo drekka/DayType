@@ -11,11 +11,10 @@ xcodebuild -scheme DayType -destination 'platform=macOS,variant=Mac Catalyst' te
 
 ## Architecture
 
-- **`Day`** — core type backed by `daysSince1970: Int`, uses Hinnant date algorithms for high-performance year/month/day math
-- **`DayComponents`** — simple year/month/day struct (like `DateComponents` but for `Day`)
+- **`Day`** — core type storing `daysSince1970: Int` alongside `year`, `month`, and `dayOfMonth` properties. Uses Hinnant date algorithms for high-performance date math. The `init(year:month:day:)` is throwing — validates month (1–12) and day (1–daysInMonth) ranges, throwing `DayError` on invalid inputs
+- **`DayError`** — error enum with `.monthOutOfRange(month:)` and `.dayOutOfRange(day:month:year:)` cases
 - **`Weekday`** — enum representing day of the week (Sun=0 through Sat=6), raw values match Hinnant's `weekday_from_days`
-- **`CalendarDay`** — bundles a `Day` with pre-computed `DayComponents` for calendar grid use
-- **`CalendarDays`** — typealias for `OrderedDictionary<Day, [CalendarDay]>` (from `swift-collections`), keys are week-start days; supports `+` operator to merge months with automatic boundary-week deduplication
+- **`CalendarDays`** — typealias for `OrderedDictionary<Day, [Day]>` (from `swift-collections`), keys are week-start days; supports `+` operator to merge months with automatic boundary-week deduplication
 - **`StartOfWeek`** — enum (`.sunday`, `.monday`) controlling which day begins calendar weeks
 - **Property wrappers** — `@DayString`, `@Epoch`, `@ISO8601` for decoding server date formats, generated via Swift macros
 
@@ -23,6 +22,8 @@ xcodebuild -scheme DayType -destination 'platform=macOS,variant=Mac Catalyst' te
 
 - All date math is GMT-based; timezone adjustments only at `Date` conversion boundaries
 - Hinnant algorithms used instead of Foundation `Calendar` for performance (see http://howardhinnant.github.io/date_algorithms.html)
+- `day(byAdding:value:)` uses exact day-count arithmetic for `.month` and `.year` (walks month/year boundaries summing actual days), and direct `daysSince1970` arithmetic for `.day`
+- Static helpers: `Day.isLeapYear(_:)`, `Day.daysInMonth(_:year:)`, `Day.daysInYear(_:)`
 - Extensions on `Day` for distinct feature areas: `Day+Weekday`, `Day+Calendar`, `Day+Operations`, `Day+Functions`, `Day+Conversions`, `Day+Formatted`
 - Conformance files in `Sources/Conformance/` (Codable, Comparable, Equatable, Hashable, Stridable)
 - Property wrappers in `Sources/Property wrappers/` with macro-generated implementations in `Macros/`
@@ -32,4 +33,4 @@ xcodebuild -scheme DayType -destination 'platform=macOS,variant=Mac Catalyst' te
 
 - One primary type per file
 - Extension files named `Day+Feature.swift`
-- Top-level types (`Weekday`, `CalendarDay`, `DayComponents`) get their own files in `Sources/`
+- Top-level types (`Weekday`, `StartOfWeek`) get their own files in `Sources/`
