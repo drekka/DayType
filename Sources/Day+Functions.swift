@@ -5,8 +5,10 @@ public extension Day {
     /// Returns a new ``Day`` by adding the specified value to the given component.
     ///
     /// For `.day`, the value is added directly to the underlying ``daysSince1970``.
-    /// For `.month`, the function walks forward or backward month by month, summing the actual number of days in each month traversed.
-    /// For `.year`, it walks year by year, summing actual days per year (accounting for leap years).
+    /// For `.month`, the target month is calculated using modular arithmetic and the day
+    /// is clamped to the last day of that month (e.g. Jan 31 + 1 month = Feb 28/29).
+    /// For `.year`, the year is adjusted directly and the day is clamped to the last day
+    /// of the resulting month (e.g. Feb 29 + 1 year in a non-leap year = Feb 28).
     ///
     /// - parameter component: The component to adjust (`.year`, `.month`, or `.day`).
     /// - parameter value: The number of units to add (negative values subtract).
@@ -19,40 +21,19 @@ public extension Day {
             return Day(daysSince1970: daysSince1970 + value)
 
         case .month:
-            var totalDays = 0
-            var currentYear = year
-            var currentMonth = month
-
-            if value >= 0 {
-                for _ in 0 ..< value {
-                    totalDays += Day.daysInMonth(currentMonth, year: currentYear)
-                    currentMonth += 1
-                    if currentMonth > 12 { currentMonth = 1; currentYear += 1 }
-                }
-            } else {
-                for _ in 0 ..< -value {
-                    currentMonth -= 1
-                    if currentMonth < 1 { currentMonth = 12; currentYear -= 1 }
-                    totalDays += Day.daysInMonth(currentMonth, year: currentYear)
-                }
-            }
-
-            return Day(daysSince1970: daysSince1970 + (value >= 0 ? totalDays : -totalDays))
+            let totalMonths = (month - 1) + value
+            let yearOffset = totalMonths >= 0 ? totalMonths / 12 : (totalMonths - 11) / 12
+            let newMonth = totalMonths - yearOffset * 12 + 1
+            let newYear = year + yearOffset
+            let clampedDay = min(dayOfMonth, Day.daysInMonth(newMonth, year: newYear))
+            // Components are guaranteed valid after clamping.
+            return try! Day(newYear, newMonth, clampedDay)
 
         case .year:
-            var totalDays = 0
-
-            if value >= 0 {
-                for i in 0 ..< value {
-                    totalDays += Day.daysInYear(year + i)
-                }
-            } else {
-                for i in 0 ..< -value {
-                    totalDays += Day.daysInYear(year - 1 - i)
-                }
-            }
-
-            return Day(daysSince1970: daysSince1970 + (value >= 0 ? totalDays : -totalDays))
+            let newYear = year + value
+            let clampedDay = min(dayOfMonth, Day.daysInMonth(month, year: newYear))
+            // Components are guaranteed valid after clamping.
+            return try! Day(newYear, month, clampedDay)
         }
     }
 }
