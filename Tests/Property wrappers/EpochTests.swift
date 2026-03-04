@@ -26,7 +26,7 @@ extension PropertyWrapperSuites {
         func decoding() throws {
             let json = #"{"milliseconds": 1328251182123, "seconds": 1328251182}"#
             let result = try JSONDecoder().decode(EpochContainer.self, from: json.data(using: .utf8)!)
-            let expectedDay = Day(2012, 02, 03)
+            let expectedDay = try Day(2012, 02, 03)
             #expect(result.milliseconds == expectedDay)
             #expect(result.seconds == expectedDay)
         }
@@ -35,7 +35,7 @@ extension PropertyWrapperSuites {
         func decodingOptional() throws {
             let json = #"{"milliseconds": 1328251182123, "seconds": 1328251182}"#
             let result = try JSONDecoder().decode(EpochOptionalContainer.self, from: json.data(using: .utf8)!)
-            let expectedDay = Day(2012, 02, 03)
+            let expectedDay = try Day(2012, 02, 03)
             #expect(result.milliseconds == expectedDay)
             #expect(result.seconds == expectedDay)
         }
@@ -72,7 +72,7 @@ extension PropertyWrapperSuites {
 
         @Test("Epoch encoding")
         func encodingEpochs() throws {
-            let day = Day(2012, 02, 03)
+            let day = try Day(2012, 02, 03)
             let instance = EpochContainer(milliseconds: day, seconds: day)
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]
@@ -83,7 +83,7 @@ extension PropertyWrapperSuites {
 
         @Test("Optional epoch encoding")
         func optionalEncodingEpochs() throws {
-            let day = Day(2012, 02, 03)
+            let day = try Day(2012, 02, 03)
             let instance = EpochOptionalContainer(milliseconds: day, seconds: day)
             let encoder = JSONEncoder()
             encoder.outputFormatting = [.withoutEscapingSlashes, .sortedKeys]

@@ -28,9 +28,8 @@ init()                                                           // Creates a `D
 init(daysSince1970: DayInterval)                                 // Creates a `Day` using the number of days since 1970.
 init(timeIntervalSince1970: TimeInterval)                        // Creates a `Day` from a `TimeInterval`.
 init(date: Date, usingCalendar calendar: Calendar = .current)    // Creates a `Day` from a `Date` with an optional calendar.
-init(components: DayComponents)                                  // Creates a `Day` from `DayComponents`.
-init(_ year: Int, _ month: Int, _ day: Int)                      // Creates a `Day` from individual year, month and day values. Short form.
-init(year: Int, month: Int, day: Int)                            // Creates a `Day` from individual year, month and day values.
+init(_ year: Int, _ month: Int, _ day: Int) throws               // Creates a `Day` from individual year, month and day values. Short form.
+init(year: Int, month: Int, day: Int) throws                     // Creates a `Day` from individual year, month and day values.
 ```
 
 ## Properties
@@ -46,6 +45,18 @@ Literally the number of days since Swift's base date of 00:00:00 UTC on 1 Januar
 > let numberOfDays = Calendar.current.dateComponents([.day], from: fromDate, to: toDate).day!
 > ```
 
+### var year: Int { get }
+
+The year component of the day.
+
+### var month: Int { get }
+
+The month component of the day (1–12).
+
+### var dayOfMonth: Int { get }
+
+The day-of-month component of the day (1–31).
+
 ### static var today: Day { get }
 
 Convenience property that returns a `Day` representing today's date. Equivalent to `Day()`.
@@ -55,8 +66,8 @@ Convenience property that returns a `Day` representing today's date. Equivalent 
 Returns the day of the week as a `Weekday` enum value.
 
 ```swift
-Day(2026, 3, 2).weekday // .monday
-Day(1970, 1, 1).weekday // .thursday
+try Day(2026, 3, 2).weekday // .monday
+try Day(1970, 1, 1).weekday // .thursday
 ```
 
 ## Mathematical operators
@@ -66,15 +77,15 @@ Day(1970, 1, 1).weekday // .thursday
 ```swift
 
 // Adding days
-let day = Day(2000,1,1) + 5 // -> 2000-01-06
+var day = try Day(2000,1,1) + 5 // -> 2000-01-06
 day += 5 // -> 2000-01-11
 
 // Subtracting days
-let day = Day(2000,1,1) - 10 // -> 1999-12-21
+var day = try Day(2000,1,1) - 10 // -> 1999-12-21
 day -= 5 // -> 1999-12-16
 
 // Obtaining a duration in days
-Day(2000,1,10) - Day(2000,1,5) // -> 5 days duration.
+try Day(2000,1,10) - Day(2000,1,5) // -> 5 days duration.
 ```
 
 ## Functions
@@ -91,41 +102,26 @@ Adds any number of years, months or days to a `Day` and returns a new `Day`. Thi
 
 Uses Apple's `Date.formatted(date:time:)` function to format the day into a `String` using the formatting specified in `Date.FormatStyle.DateStyle`.
 
-# DayComponents
-
-Similar to how `Date` has `DateComponents`, `Day` has `DayComponents` which contain the day's year, month and day.
-
 # Calendar generation
 
-DayType provides a calendar generation specifically for building calendar UIs.
-
-## CalendarDay
-
-A struct that bundles a `Day` with its pre-computed `DayComponents` for the purpose of providing this data to a calendar UI:
-
-```swift
-public struct CalendarDay {
-    public let day: Day
-    public let dayComponents: DayComponents
-}
-```
+DayType provides calendar generation specifically for building calendar UIs.
 
 ## CalendarDays
 
-A typealias for `OrderedDictionary<Day, [CalendarDay]>` (using Apple's [swift-collections](https://github.com/apple/swift-collections)) where each key is the first `Day` of a week and the value is a 7-element array of `CalendarDay` values. One per day of the week starting from either Sunday or Monday. Depending on your preference. 
+A typealias for `OrderedDictionary<Day, [Day]>` (using Apple's [swift-collections](https://github.com/apple/swift-collections)) where each key is the first `Day` of a week and the value is a 7-element array of `Day` values. One per day of the week starting from either Sunday or Monday. Depending on your preference.
 
-The intent of this data structure is to allow it to be mapped into a UI without any complicated processing. Simply loop through the values which will be in order and then loop through the arrays to create the Sunday to Saturday or Monday to Sunday cells.  
+The intent of this data structure is to allow it to be mapped into a UI without any complicated processing. Simply loop through the values which will be in order and then loop through the arrays to create the Sunday to Saturday or Monday to Sunday cells.
 
 ## Generating a calendar month
 
-Use `calendarMonth(startingOn:)` to generate the grid for the month containing a given day. It doesn't matter which day you give it, the function will work out the month to build out. Because it's focused on calendars the first and last week arrays may also contains some days from the prior or next month so those weeks will still have 7 values. 
+Use `calendarMonth(startingOn:)` to generate the grid for the month containing a given day. It doesn't matter which day you give it, the function will work out the month to build out. Because it's focused on calendars the first and last week arrays may also contains some days from the prior or next month to ensure those week arrays have the full 7 days. 
 
 ```swift
 // Instance method
-let month = Day(2026, 3, 15).calendarMonth(startingOn: .monday)
+let month = try Day(2026, 3, 15).calendarMonth(startingOn: .monday)
 
 // Static convenience
-let month = Day.calendarMonth(containing: Day(2026, 3, 15), startingOn: .sunday)
+let month = try Day.calendarMonth(containing: Day(2026, 3, 15), startingOn: .sunday)
 
 // Defaults to today and Sunday start
 let month = Day.calendarMonth()
@@ -135,17 +131,17 @@ The `StartOfWeek` enum controls which day begins each week row (`.sunday` or `.m
 
 ## Merging calendar months
 
-The `+` operator merges calendar months together, automatically deduplicating overlapping boundary weeks:
+The `+` and `+=` operators merge calendar months together, automatically deduplicating overlapping boundary weeks:
 
 ```swift
-let march = Day(2026, 3, 15).calendarMonth(startingOn: .monday)
-let april = Day(2026, 4, 2).calendarMonth(startingOn: .monday)
+let march = try Day(2026, 3, 15).calendarMonth(startingOn: .monday)
+let april = try Day(2026, 4, 2).calendarMonth(startingOn: .monday)
 
 // Merge two CalendarDays dictionaries
 let twoMonths = march + april
-
-// Merge with a Day (infers StartOfWeek from existing keys)
-let twoMonths = march + Day(2026, 4, 15)
+// or …
+var year = march
+year += april
 ```
 
 # Protocol conformance
@@ -161,7 +157,7 @@ When encoded or decoded it uses an `Int` representing the number of days since 1
 `Day` is `Equatable` so days can be compared:
 
 ```swift
-Day(2001,2,3) == Day(2001,2,3) // true
+try Day(2001, 2, 3) == Day(2001, 2, 3) // true
 ```
 
 ## Comparable
@@ -177,15 +173,15 @@ Day(2001,2,3) == Day(2001,2,3) // true
 `Day` is `Strideable` which means you can use it in for loops as well as with the `stride(from:to:by:)` function. For example:
 
 ```swift
-for day in Day(2000,1,1)...Day(2000,1,5) {
+for day in try Day(2000, 1, 1) ... Day(2000, 1, 5) {
     /// do something with the 1st, 2nd, 3rd, 4th and 5th.
 }
 
-for day in Day(2000,1,1)..<Day(2000,1,5) {
+for day in try Day(2000, 1, 1) ..< Day(2000, 1, 5) {
     /// do something with the 1st, 2nd, 3rd and 4th.
 }
 
-for day in stride(from: Day(2000,1,1), to: Day(2000,1,5), by: 2) {
+for day in stride(from: try Day(2000, 1, 1), to: try Day(2000, 1, 5), by: 2) {
     /// do something with the 1st and 3rd.
 }
 ```
@@ -198,13 +194,13 @@ All of the supplied property wrappers can read and write both `Day` and optional
 
 ## `@DayString.DMY`, `@DayString.MDY` & `@DayString.YMD`
 
-These property wrappers are designed to encode and decode dates in the `dd/mm/yyyy`, `mm/dd/yyyy` and `yyyy/mm/dd` formats. For example:
+These property wrappers are designed to encode and decode dates in the `dd/MM/yyyy`, `MM/dd/yyyy` and `yyyy-MM-dd` formats. For example:
 
 ```swift
 struct MyData {
-    @DayString.DMY var dmyDay: Day          // "31/04/2025"
-    @DayString.MDY var mdyDay: Day          // "04/31/2025"
-    @DayString.YMD var ymdOptionalDay: Day? // "2025/04/31"
+    @DayString.DMY var dmyDay: Day          // "30/04/2025"
+    @DayString.MDY var mdyDay: Day          // "04/30/2025"
+    @DayString.YMD var ymdOptionalDay: Day? // "2025-04-30"
 }
 ```
 
@@ -225,8 +221,8 @@ Encodes and decodes standard ISO 8601 date strings. The only difference is that 
 
 ```swift
 struct MyData {
-    @ISO8601.Default var iso8601: Day                    // "2025-04-31T12:01:00Z+12:00"
-    @ISO8601.SansTimezone var optionalSansTimezone: Day? // "2025-04-31T12:01:00"
+    @ISO8601.Default var iso8601: Day                    // "2025-04-30T12:01:00Z"
+    @ISO8601.SansTimezone var optionalSansTimezone: Day? // "2025-04-30T12:01:00"
 }
 ```
 

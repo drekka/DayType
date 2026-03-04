@@ -6,8 +6,8 @@ import Testing
 struct DayConversionTests {
 
     @Test("To a Date")
-    func toDate() {
-        let day = Day(2000, 1, 1)
+    func toDate() throws {
+        let day = try Day(2000, 1, 1)
         let date = day.date()
         let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour], from: date)
         #expect(dateComponents.year == 2000)
@@ -17,9 +17,9 @@ struct DayConversionTests {
     }
 
     @Test("Time zones are correct")
-    func testDateInTimeZone() {
+    func testDateInTimeZone() throws {
 
-        let day = Day(2000, 1, 1)
+        let day = try Day(2000, 1, 1)
 
         // Get the date of the day in the Melbourne time zone.
         let melbourne = TimeZone(secondsFromGMT: 11 * 3600)!

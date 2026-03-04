@@ -30,7 +30,7 @@ struct DayOperationTests {
     }
 
     @Test("Diff")
-    func dayDiff() {
-        #expect(Day(2020, 3, 12) - Day(2020, 3, 6) == 6)
+    func dayDiff() throws {
+        #expect(try Day(2020, 3, 12) - Day(2020, 3, 6) == 6)
     }
 }

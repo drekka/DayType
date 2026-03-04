@@ -29,14 +29,9 @@ struct DayTests {
         #expect(Day(timeIntervalSince1970: 24 * 60 * 60 + 1).daysSince1970 == 1)
     }
 
-    @Test("Init with components")
-    func initComponents() {
-        #expect(Day(components: DayComponents(year: 2023, month: 4, day: 8)).daysSince1970 == 19455)
-    }
-
     @Test("Init with short form components")
-    func initShortForm() {
-        #expect(Day(2023, 4, 8).daysSince1970 == 19455)
+    func initShortForm() throws {
+        #expect(try Day(2023, 4, 8).daysSince1970 == 19455)
     }
 
     @Test("Check Day vs Date math")
@@ -53,14 +48,13 @@ struct DayTests {
 
     private func matches(day: Day, date: Date, sourceLocation: Testing.SourceLocation = #_sourceLocation) -> Bool {
 
-        let dayComponents = day.dayComponents()
         let dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: date)
 
-        guard dayComponents.year == dateComponents.year,
-              dayComponents.month == dateComponents.month,
-              dayComponents.day == dateComponents.day else {
+        guard day.year == dateComponents.year,
+              day.month == dateComponents.month,
+              day.dayOfMonth == dateComponents.day else {
             print("Date components: \(dateComponents)")
-            print("Day components : \(dayComponents)")
+            print("Day: \(day.year)-\(day.month)-\(day.dayOfMonth)")
             Issue.record("Day from date and back to date failed", sourceLocation: sourceLocation)
             return false
         }

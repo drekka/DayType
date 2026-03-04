@@ -7,6 +7,7 @@ struct KeyedContainerEncodeMissingDayStringMacro: MemberMacro {
     static func expansion(
         of node: AttributeSyntax,
         providingMembersOf owningType: some DeclGroupSyntax,
+        conformingTo _: [TypeSyntax],
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
 

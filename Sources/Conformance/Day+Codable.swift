@@ -10,7 +10,7 @@ extension Day: Codable {
 
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        daysSince1970 = try container.decode(Int.self)
+        self.init(daysSince1970: try container.decode(Int.self))
     }
 
     public func encode(to encoder: Encoder) throws {

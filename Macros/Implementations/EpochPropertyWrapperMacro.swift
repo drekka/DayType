@@ -7,6 +7,7 @@ struct EpochPropertyWrapperMacro: MemberMacro {
     static func expansion(
         of node: AttributeSyntax,
         providingMembersOf _: some DeclGroupSyntax,
+        conformingTo _: [TypeSyntax],
         in context: some MacroExpansionContext
     ) throws -> [DeclSyntax] {
 
