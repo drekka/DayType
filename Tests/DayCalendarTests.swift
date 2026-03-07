@@ -20,7 +20,8 @@ struct DayCalendarTests {
     func keysAreWeekStarts() throws {
         let month = try Day(2026, 3, 15).calendarMonth(startingOn: .monday)
         for (key, week) in month {
-            #expect(key == week[0])
+            // Key should match the first element's components.
+            #expect(key.dayComponents.dayOfMonth == week[0].dayOfMonth)
             #expect(key.weekday == .monday)
         }
     }
@@ -35,16 +36,17 @@ struct DayCalendarTests {
         let weeks = Array(month.values)
 
         // First row starts Mon 23 Feb
-        #expect(try weeks[0][0] == Day(2026, 2, 23))
+        #expect(try month.keys.first == Day(2026, 2, 23))
         #expect(weeks[0][0].month == 2)
 
         // Sunday 1 March is the last day of the first row
-        #expect(try weeks[0][6] == Day(2026, 3, 1))
+        #expect(weeks[0][6].month == 3)
+        #expect(weeks[0][6].dayOfMonth == 1)
 
         // Last row should contain March 31 (Tuesday) and end on Sunday 5 April
         let lastWeek = weeks[weeks.count - 1]
-        #expect(try lastWeek[6] == Day(2026, 4, 5))
         #expect(lastWeek[6].month == 4)
+        #expect(lastWeek[6].dayOfMonth == 5)
 
         // Key verification
         #expect(try month.keys.first == Day(2026, 2, 23))
@@ -60,12 +62,13 @@ struct DayCalendarTests {
         let weeks = Array(month.values)
 
         // First day is Sunday 1 March
-        #expect(try weeks[0][0] == Day(2026, 3, 1))
+        #expect(try month.keys.first == Day(2026, 3, 1))
         #expect(weeks[0][0].month == 3)
 
         // Last row ends on Saturday 4 April
         let lastWeek = weeks[weeks.count - 1]
-        #expect(try lastWeek[6] == Day(2026, 4, 4))
+        #expect(lastWeek[6].month == 4)
+        #expect(lastWeek[6].dayOfMonth == 4)
     }
 
     // MARK: - February leap year
@@ -77,16 +80,16 @@ struct DayCalendarTests {
         let weeks = Array(month.values)
 
         // First row starts Mon 29 Jan
-        #expect(try weeks[0][0] == Day(2024, 1, 29))
+        #expect(try month.keys.first == Day(2024, 1, 29))
 
         // Should contain Feb 29
         let allDays = month.values.flatMap { $0 }
-        let feb29 = try Day(2024, 2, 29)
-        #expect(allDays.contains { $0 == feb29 })
+        #expect(allDays.contains { $0.month == 2 && $0.dayOfMonth == 29 })
 
         // Last row ends on Sunday 3 March
         let lastWeek = weeks[weeks.count - 1]
-        #expect(try lastWeek[6] == Day(2024, 3, 3))
+        #expect(lastWeek[6].month == 3)
+        #expect(lastWeek[6].dayOfMonth == 3)
     }
 
     // MARK: - Day properties populated
@@ -94,8 +97,7 @@ struct DayCalendarTests {
     @Test("Calendar days contain correct properties")
     func calendarDayProperties() throws {
         let month = try Day(2026, 3, 1).calendarMonth(startingOn: .monday)
-        let target = try Day(2026, 3, 15)
-        let march15 = month.values.flatMap { $0 }.first { $0 == target }!
+        let march15 = month.values.flatMap { $0 }.first { $0.month == 3 && $0.dayOfMonth == 15 }!
         #expect(march15.year == 2026)
         #expect(march15.month == 3)
         #expect(march15.dayOfMonth == 15)

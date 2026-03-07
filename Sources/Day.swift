@@ -24,9 +24,38 @@ public struct Day {
     }
 
     public let daysSince1970: Int
-    public let year: Int
-    public let month: Int
-    public let dayOfMonth: Int
+
+    /// The year, month, and day-of-month components of this day, computed using Hinnant's civil_from_days algorithm.
+    public var dayComponents: DayComponents {
+
+        // Shift the epoch from 1970-01-01 to 0000-03-01.
+        let daysSinceZero = daysSince1970 + 719_468
+
+        // Calculate the era, adjusting for negative dates.
+        let era = (daysSinceZero >= 0 ? daysSinceZero : daysSinceZero - 146_096) / 146_097
+
+        let dayOfEra = daysSinceZero - era * 146_097 // Range: 0 -> 146096
+
+        // Accounts for the variations in numbers of days during the early parts of an era.
+        let yearOfEra = (dayOfEra - dayOfEra / 1460 + dayOfEra / 36524 - dayOfEra / 146_096) / 365 // Range: 0 -> 399
+
+        let computedYear = yearOfEra + era * 400
+
+        // Calculate the day of the year accounting for leap years and centuries.
+        let dayOfYear = dayOfEra - (365 * yearOfEra + yearOfEra / 4 - yearOfEra / 100) // Range: 0 -> 365
+
+        // Get the month based on March being month 0.
+        let baseMonth = (5 * dayOfYear + 2) / 153 // Range: 0 -> 11
+
+        // Calculate the day and month, shifting back to Jan = 1.
+        let day = dayOfYear - (153 * baseMonth + 2) / 5 + 1 // Range: 1 -> 31
+        let month = baseMonth < 10 ? baseMonth + 3 : baseMonth - 9 // Range: 1 -> 12
+
+        // Adjust the year for Jan/Feb (which were at the end of the shifted year).
+        let year = month <= 2 ? computedYear + 1 : computedYear
+
+        return DayComponents(year: year, month: month, dayOfMonth: day)
+    }
 
     // MARK: - Date helpers
 
@@ -66,45 +95,6 @@ public struct Day {
     /// - daysSince1970: Same as ``Date``'s ``timeIntervalSince1970`` except expressed as the number of days.
     public init(daysSince1970: DayInterval) {
         self.daysSince1970 = daysSince1970
-
-        // Decompose daysSince1970 into year, month and day using Hinnant's algorithms.
-        //
-        // Note that whilst this code produces the same results as using Apple's APIs like this
-        //
-        // let secondsSince1970 = TimeInterval(daysSince1970 * 60 * 60 * 24)
-        // let date = Date(timeIntervalSince1970: secondsSince1970)
-        // var calendar = Calendar.current
-        // calendar.timeZone = TimeZone(secondsFromGMT: 0)!
-        // let components = calendar.dateComponents([.year, .month, .day], from: date)
-        //
-        // it is significantly faster.
-
-        // Shift the epoch from 1970-01-01 to 0000-03-01
-        let daysSinceZero = daysSince1970 + 719_468
-
-        // Recalcate the era allowing for negative dates.
-        let era = (daysSinceZero >= 0 ? daysSinceZero : daysSinceZero - 146_096) / 146_097
-
-        let dayOfEra = daysSinceZero - era * 146_097 // Range: 0-> 146096
-
-        // This accounts for the variations in numbers of days during the early parts of an era. See doco for details.
-        let yearOfEra = (dayOfEra - dayOfEra / 1460 + dayOfEra / 36524 - dayOfEra / 146_096) / 365 // Range: 0 -> 399
-
-        let computedYear = yearOfEra + era * 400
-
-        // Calculate the day of the era accounting for leap years and centuries.
-        let dayOfYear = dayOfEra - (365 * yearOfEra + yearOfEra / 4 - yearOfEra / 100) // Range: 0 -> 365
-
-        // Now get the month based on the first month being March.
-        let baseMonth = (5 * dayOfYear + 2) / 153 // Range: 0 -> 11
-
-        // And finally get the day and month.
-        let computedDay = dayOfYear - (153 * baseMonth + 2) / 5 + 1 // Range: 1 -> 31
-        let computedMonth = baseMonth < 10 ? baseMonth + 3 : baseMonth - 9 // Range: 1 -> 12
-
-        year = computedMonth <= 2 ? computedYear + 1 : computedYear
-        month = computedMonth
-        dayOfMonth = computedDay
     }
 
     /// Initialiser matching that provided by ``Date``.
@@ -126,6 +116,14 @@ public struct Day {
         let components = calendar.dateComponents([.year, .month, .day], from: date)
         // Calendar always returns valid components, so try! is safe.
         try! self.init(year: components.year!, month: components.month!, day: components.day!)
+    }
+
+    /// Creates a ``Day`` from a ``DayComponents`` value.
+    ///
+    /// - parameter dayComponents: The components to use.
+    /// - throws: ``DayError`` if month or day is out of range.
+    public init(_ dayComponents: DayComponents) throws {
+        try self.init(year: dayComponents.year, month: dayComponents.month, day: dayComponents.dayOfMonth)
     }
 
     /// Convenience wrapper for ``init(year:month:day:)`` that drops the argument names.
@@ -163,20 +161,7 @@ public struct Day {
             throw DayError.dayOutOfRange(day: day, month: month, year: year)
         }
 
-        self.year = year
-        self.month = month
-        dayOfMonth = day
-
-        // Note: These calculations made use of the way Ints round fractional parts down.
-        // Also note that whilst this code produces the same results as using Apple's APIs like this
-        //
-        // let calendar = Calendar.current
-        // let components = DateComponents(calendar: calendar, year: year, month: month, day: day)
-        // let fromDate = calendar.startOfDay(for: Date(timeIntervalSince1970: 0))
-        // let toDate = calendar.startOfDay(for: components.date!)
-        // daysSince1970 = calendar.dateComponents([.day], from: fromDate, to: toDate).day!
-        //
-        // it is significantly faster. ie. The unit test for a million iterations takes 2 seconds instead of over 30.
+        // Hinnant's days_from_civil algorithm.
 
         // Adjust the year when the month is Jan or Feb to make the leap day the last day of the year.
         let adjustedYear = month <= 2 ? validatedYear - 1 : validatedYear

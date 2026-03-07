@@ -14,16 +14,16 @@ struct DayRollingTests {
 
     @Test("Feb 29 in leap year is valid")
     func feb29InLeapYear() throws {
-        let day = try Day(2024, 2, 29)
-        #expect(day.year == 2024)
-        #expect(day.month == 2)
-        #expect(day.dayOfMonth == 29)
+        let components = try Day(2024, 2, 29).dayComponents
+        #expect(components.year == 2024)
+        #expect(components.month == 2)
+        #expect(components.dayOfMonth == 29)
     }
 
     @Test("Feb 28 in non-leap year is valid")
     func feb28InNonLeapYear() throws {
-        let day = try Day(2026, 2, 28)
-        #expect(day.dayOfMonth == 28)
+        let components = try Day(2026, 2, 28).dayComponents
+        #expect(components.dayOfMonth == 28)
     }
 
     @Test("Day 31 in 31-day months")
