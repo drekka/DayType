@@ -28,6 +28,7 @@ init()                                                           // Creates a `D
 init(daysSince1970: DayInterval)                                 // Creates a `Day` using the number of days since 1970.
 init(timeIntervalSince1970: TimeInterval)                        // Creates a `Day` from a `TimeInterval`.
 init(date: Date, usingCalendar calendar: Calendar = .current)    // Creates a `Day` from a `Date` with an optional calendar.
+init(_ dayComponents: DayComponents) throws                      // Creates a `Day` from a `DayComponents` value.
 init(_ year: Int, _ month: Int, _ day: Int) throws               // Creates a `Day` from individual year, month and day values. Short form.
 init(year: Int, month: Int, day: Int) throws                     // Creates a `Day` from individual year, month and day values.
 ```
@@ -45,17 +46,16 @@ Literally the number of days since Swift's base date of 00:00:00 UTC on 1 Januar
 > let numberOfDays = Calendar.current.dateComponents([.day], from: fromDate, to: toDate).day!
 > ```
 
-### var year: Int { get }
+### var dayComponents: DayComponents { get }
 
-The year component of the day.
+Returns a `DayComponents` value containing the `year`, `month`, and `dayOfMonth` properties of the day. Computed on access using Hinnant's civil_from_days algorithm.
 
-### var month: Int { get }
-
-The month component of the day (1–12).
-
-### var dayOfMonth: Int { get }
-
-The day-of-month component of the day (1–31).
+```swift
+let components = try Day(2025, 8, 29).dayComponents
+components.year       // 2025
+components.month      // 8
+components.dayOfMonth // 29
+```
 
 ### static var today: Day { get }
 
@@ -108,7 +108,7 @@ DayType provides calendar generation specifically for building calendar UIs.
 
 ## CalendarDays
 
-A typealias for `OrderedDictionary<Day, [Day]>` (using Apple's [swift-collections](https://github.com/apple/swift-collections)) where each key is the first `Day` of a week and the value is a 7-element array of `Day` values. One per day of the week starting from either Sunday or Monday. Depending on your preference.
+A typealias for `OrderedDictionary<Day, [DayComponents]>` (using Apple's [swift-collections](https://github.com/apple/swift-collections)) where each key is the first `Day` of a week and the value is a 7-element array of `DayComponents` values. One per day of the week starting from either Sunday or Monday. Depending on your preference.
 
 The intent of this data structure is to allow it to be mapped into a UI without any complicated processing. Simply loop through the values which will be in order and then loop through the arrays to create the Sunday to Saturday or Monday to Sunday cells.
 

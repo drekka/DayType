@@ -49,12 +49,13 @@ struct DayTests {
     private func matches(day: Day, date: Date, sourceLocation: Testing.SourceLocation = #_sourceLocation) -> Bool {
 
         let dateComponents = Calendar.current.dateComponents([.year, .month, .day], from: date)
+        let components = day.dayComponents
 
-        guard day.year == dateComponents.year,
-              day.month == dateComponents.month,
-              day.dayOfMonth == dateComponents.day else {
+        guard components.year == dateComponents.year,
+              components.month == dateComponents.month,
+              components.dayOfMonth == dateComponents.day else {
             print("Date components: \(dateComponents)")
-            print("Day: \(day.year)-\(day.month)-\(day.dayOfMonth)")
+            print("Day: \(components.year)-\(components.month)-\(components.dayOfMonth)")
             Issue.record("Day from date and back to date failed", sourceLocation: sourceLocation)
             return false
         }

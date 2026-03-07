@@ -1,14 +1,14 @@
 import Foundation
 @_exported import OrderedCollections
 
-/// An ordered dictionary mapping the first ``Day`` of each week to its 7-element ``Day`` array.
-public typealias CalendarDays = OrderedDictionary<Day, [Day]>
+/// An ordered dictionary mapping the first ``Day`` of each week to its 7-element ``DayComponents`` array.
+public typealias CalendarDays = OrderedDictionary<Day, [DayComponents]>
 
 public extension Day {
 
     /// Returns a calendar month grid for the month containing this day.
     ///
-    /// The returned ``CalendarDays`` maps each week's starting ``Day`` to an array of 7 ``Day`` values.
+    /// The returned ``CalendarDays`` maps each week's starting ``Day`` to an array of 7 ``DayComponents`` values.
     /// The first and last weeks may include days from the previous or next month
     /// to fill out complete weeks.
     ///
@@ -18,8 +18,9 @@ public extension Day {
 
         // First and last days of the target month.
         // Properties come from a valid Day, so month is always 1-12 and day values are valid.
-        let firstOfMonth = try! Day(year, month, 1)
-        let lastOfMonth = try! Day(year, month, Day.daysInMonth(month, year: year))
+        let components = dayComponents
+        let firstOfMonth = try! Day(components.year, components.month, 1)
+        let lastOfMonth = try! Day(components.year, components.month, Day.daysInMonth(components.month, year: components.year))
 
         // Calculate how many days to step back from the 1st to reach the start-of-week day.
         let firstWeekday = firstOfMonth.weekday
@@ -31,9 +32,9 @@ public extension Day {
         var cursor = gridStart
         repeat {
             let weekStart = cursor
-            var week: [Day] = []
+            var week: [DayComponents] = []
             for _ in 0 ..< 7 {
-                week.append(cursor)
+                week.append(cursor.dayComponents)
                 cursor = cursor + 1
             }
             result[weekStart] = week

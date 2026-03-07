@@ -21,19 +21,21 @@ public extension Day {
             return Day(daysSince1970: daysSince1970 + value)
 
         case .month:
-            let totalMonths = (month - 1) + value
+            let components = dayComponents
+            let totalMonths = (components.month - 1) + value
             let yearOffset = totalMonths >= 0 ? totalMonths / 12 : (totalMonths - 11) / 12
             let newMonth = totalMonths - yearOffset * 12 + 1
-            let newYear = year + yearOffset
-            let clampedDay = min(dayOfMonth, Day.daysInMonth(newMonth, year: newYear))
+            let newYear = components.year + yearOffset
+            let clampedDay = min(components.dayOfMonth, Day.daysInMonth(newMonth, year: newYear))
             // Components are guaranteed valid after clamping.
             return try! Day(newYear, newMonth, clampedDay)
 
         case .year:
-            let newYear = year + value
-            let clampedDay = min(dayOfMonth, Day.daysInMonth(month, year: newYear))
+            let components = dayComponents
+            let newYear = components.year + value
+            let clampedDay = min(components.dayOfMonth, Day.daysInMonth(components.month, year: newYear))
             // Components are guaranteed valid after clamping.
-            return try! Day(newYear, month, clampedDay)
+            return try! Day(newYear, components.month, clampedDay)
         }
     }
 }
