@@ -3,13 +3,46 @@
 
 _An API for dates and nothing else. No calendars, no timezones, no hours, minutes or seconds. **Just dates!**_
 
-Sure Swift provides excellent date support with its `Date`, `Calendar`, `TimeZone` and related types. But there's a catch — they're all designed to work with a specific point in time. And that's not always how people think, and sometimes not even what we get from a server.
+Swift provides excellent date support with its `Date`, `Calendar`, `TimeZone` and related types. But there's a catch — they're all designed to work with a specific point in time. And that's not always how people think, and sometimes not even what we get from a server.
 
 For example we never refer to a person's birthday as being a specific point in time. We don't say "Hey, it's Dave's birthday on the 29th of August at 2:14 am AEST". We simply say the 29th of August and everyone knows what we mean. But Apple's time APIs don't have that generalisation and that means extra work for developers to strip times, adjust time zones, and compare sanitised values. All of which is easy to get wrong.
 
 This is where `DayType` steps in. 
 
 Basically DayType simplifies date handling through a `Day` type which represents of a 24-hour period independent of any timezone. There's no hours, minutes, seconds and milliseconds. Nor is there any time zones or even calendars to deal with. In other words, it does dates as people think about them.
+
+# Table of contents
+
+- [Installation](#installation)
+- [Introducing Day](#introducing-day)
+  - [Initialisers](#initialisers)
+  - [Properties](#properties)
+    - [var daysSince1970: Int { get }](#var-dayssince1970-int-get)
+    - [var dayComponents: DayComponents { get }](#var-daycomponents-daycomponents-get)
+    - [static var today: Day { get }](#static-var-today-day-get)
+    - [var weekday: Weekday { get }](#var-weekday-weekday-get)
+  - [Mathematical operators](#mathematical-operators)
+  - [Functions](#functions)
+    - [func date(inCalendar calendar: Calendar = .current, timeZone: TimeZone? = nil) -> Date](#func-date-incalendar-calendar-calendar-current-timezone-timezone-nil-date)
+    - [func day(byAdding component: Day.Component, value: Int) -> Day](#func-day-byadding-component-day-component-value-int-day)
+    - [func formatted(_ day: Date.FormatStyle.DateStyle = .abbreviated) -> String](#func-formatted-day-date-formatstyle-datestyle-abbreviated-string)
+- [Calendar generation](#calendar-generation)
+  - [Generating a calendar month](#generating-a-calendar-month)
+  - [Merging calendar months](#merging-calendar-months)
+- [Protocol conformance](#protocol-conformance)
+  - [Codable](#codable)
+  - [Equatable](#equatable)
+  - [Comparable](#comparable)
+  - [Hashable](#hashable)
+  - [Strideable](#strideable)
+- [Property wrappers](#property-wrappers)
+  - [`@DayString.DMY`, `@DayString.MDY` & `@DayString.YMD`](#daystring-dmy-daystring-mdy-daystring-ymd)
+  - [`@Epoch.Seconds` & `@Epoch.Milliseconds`](#epoch-seconds-epoch-milliseconds)
+  - [`@ISO8601.Default` and `@ISO8601.SansTimezone`](#iso8601-default-and-iso8601-sanstimezone)
+  - [Encoding and decoding nulls](#encoding-and-decoding-nulls)
+- [DayType and SwiftData](#daytype-and-swiftdata)
+- [References and thanks](#references-and-thanks)
+- [Future additions](#future-additions)
 
 ## Installation
 
@@ -104,13 +137,9 @@ Uses Apple's `Date.formatted(date:time:)` function to format the day into a `Str
 
 # Calendar generation
 
-DayType provides calendar generation specifically for building calendar UIs.
+DayType can also generate a data structure specifically for building calendar UIs. It has a `CalendarDays` typealias which maps to a `OrderedDictionary<Day, [DayComponents]>` (Apple's [swift-collections](https://github.com/apple/swift-collections)) where the key is the first `Day` of a single week in the calendar and the value is a an array of `DayComponents` values representing the days in that week. Starting from either Sunday or Monday.
 
-## CalendarDays
-
-A typealias for `OrderedDictionary<Day, [DayComponents]>` (using Apple's [swift-collections](https://github.com/apple/swift-collections)) where each key is the first `Day` of a week and the value is a 7-element array of `DayComponents` values. One per day of the week starting from either Sunday or Monday. Depending on your preference.
-
-The intent of this data structure is to allow it to be mapped into a UI without any complicated processing. Simply loop through the values which will be in order and then loop through the arrays to create the Sunday to Saturday or Monday to Sunday cells.
+The intent of this data structure is to allow easy mapping into a UI. Simply loop through the array values to create the Sunday to Saturday or Monday to Sunday cells.
 
 ## Generating a calendar month
 
@@ -265,6 +294,46 @@ Will write the following JSON when all the properties are `nil`:
    "dmy": null,
    "seconds": null,
    "iso8601": null
+}
+```
+
+# DayType and SwiftData
+
+DayType works within SwiftData up to a point. That point being where you wish to use a `Day` in a SwiftData `@Query`. As an example you might do something like this:
+
+```swift
+@Model
+class Holiday {
+   let startDatye: Day
+   let endEnd: Day
+}
+
+struct SomeView: View {
+    @Query(sort: \Holiday.startDate) private var holidays: [Holiday]
+}
+```
+
+This makes sense however when SwiftData writes the schema out to the database it will actually flatten the two `Day` fields into the `Holiday` Table as something like:
+
+```
+CREATE TABLE ZHOLIDAY (
+    Z_PK INTEGER PRIMARY KEY,
+    ZDAYSSINCE1970 INTEGER,
+    ZDAYSSINCE19701 INTEGER
+) 
+```
+
+The result of this is that when you run the `@Query(…)` it fails, claiming it's unable to resolve the `startDate` key path.
+
+This is due to the way SwiftData works. When flattening it uses mirrors and raw types, reaching into each `Day` to get the name of the internal property holding the number of days since 1970.
+
+There is no way (currently) around this. SwiftData has no facility to specifically name the database field and due to it's use or mirrors there's no swift trickery we can use to make it work.
+
+Instead what we have to do is explicity use `Day`'s `daysSince1970` property in the query like this:
+
+```swift
+struct SomeView: View {
+    @Query(sort: \Holiday.startDate.daysSince1970) private var holidays: [Holiday]
 }
 ```
 
