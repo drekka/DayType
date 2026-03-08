@@ -15,7 +15,7 @@ public struct DayComponents {
         self.dayOfMonth = dayOfMonth
     }
 
-    func day() throws -> Day {
+    public func day() throws -> Day {
         try Day(self)
     }
 }
