@@ -15,7 +15,8 @@ xcodebuild -scheme DayType -destination 'platform=macOS,variant=Mac Catalyst' te
 - **`DayComponents`** — struct containing `year`, `month`, `dayOfMonth` properties. Accessed via `Day.dayComponents` computed property (Hinnant reverse algorithm). Kept as computed to avoid SwiftData struct decomposition issues
 - **`DayError`** — error enum with `.monthOutOfRange(month:)` and `.dayOutOfRange(day:month:year:)` cases
 - **`Weekday`** — enum representing day of the week (Sun=0 through Sat=6), raw values match Hinnant's `weekday_from_days`
-- **`CalendarDays`** — typealias for `OrderedDictionary<Day, [DayComponents]>` (from `swift-collections`), keys are week-start days, values are `DayComponents` arrays; supports `+` operator to merge months with automatic boundary-week deduplication
+- **`CalendarDay`** — struct combining a `Day` with its pre-computed `DayComponents`, used as calendar grid entries
+- **`CalendarDays`** — typealias for `OrderedDictionary<Day, [CalendarDay]>` (from `swift-collections`), keys are week-start days, values are `CalendarDay` arrays; supports `+` operator to merge months with automatic boundary-week deduplication
 - **`StartOfWeek`** — enum (`.sunday`, `.monday`) controlling which day begins calendar weeks
 - **Property wrappers** — `@DayString`, `@Epoch`, `@ISO8601` for decoding server date formats, generated via Swift macros
 

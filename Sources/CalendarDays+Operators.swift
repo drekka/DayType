@@ -1,6 +1,6 @@
 import OrderedCollections
 
-public extension OrderedDictionary where Key == Day, Value == [DayComponents] {
+public extension OrderedDictionary where Key == Day, Value == [CalendarDay] {
 
     /// Merges two calendar month dictionaries, maintaining chronological order.
     ///

@@ -1,14 +1,14 @@
 import Foundation
 @_exported import OrderedCollections
 
-/// An ordered dictionary mapping the first ``Day`` of each week to its 7-element ``DayComponents`` array.
-public typealias CalendarDays = OrderedDictionary<Day, [DayComponents]>
+/// An ordered dictionary mapping the first ``Day`` of each week to its 7-element ``CalendarDay`` array.
+public typealias CalendarDays = OrderedDictionary<Day, [CalendarDay]>
 
 public extension Day {
 
     /// Returns a calendar month grid for the month containing this day.
     ///
-    /// The returned ``CalendarDays`` maps each week's starting ``Day`` to an array of 7 ``DayComponents`` values.
+    /// The returned ``CalendarDays`` maps each week's starting ``Day`` to an array of 7 ``CalendarDay`` values.
     /// The first and last weeks may include days from the previous or next month
     /// to fill out complete weeks.
     ///
@@ -32,9 +32,9 @@ public extension Day {
         var cursor = gridStart
         repeat {
             let weekStart = cursor
-            var week: [DayComponents] = []
+            var week: [CalendarDay] = []
             for _ in 0 ..< 7 {
-                week.append(cursor.dayComponents)
+                week.append(CalendarDay(day: cursor))
                 cursor = cursor + 1
             }
             result[weekStart] = week
