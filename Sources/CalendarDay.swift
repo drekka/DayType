@@ -12,3 +12,7 @@ public struct CalendarDay {
         self.dayComponents = day.dayComponents
     }
 }
+
+extension CalendarDay: Hashable, Equatable, Identifiable {
+    public var id: Day { day }
+}

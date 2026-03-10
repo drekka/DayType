@@ -19,3 +19,7 @@ public struct DayComponents {
         try Day(self)
     }
 }
+
+extension DayComponents: Equatable, Hashable {}
+
+
