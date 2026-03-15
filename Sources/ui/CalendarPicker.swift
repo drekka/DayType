@@ -54,7 +54,7 @@ public struct CalendarPicker: View {
             grid
                 .padding(.top, 8)
         }
-        .padding()
+
     }
 
     // MARK: - Title bar

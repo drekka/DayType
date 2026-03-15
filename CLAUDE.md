@@ -30,15 +30,22 @@ xcodebuild -scheme DayType -destination 'platform=macOS,variant=Mac Catalyst' te
 
 ### UI Components (`DayTypeUI`)
 
-- **`DayCell`** — single calendar day cell view with 6 highlight states (`none`, `range`, `rangeStart`, `rangeEnd`, `selectedStart`, `selectedEnd`), pulsing animation for selected endpoints, month label on day 1, even/odd month tinting, and `onTapped` callback
+- No internal padding on any component — consuming views decide their own spacing
+- **`DayCell`** (internal) — single calendar day cell with 6 highlight states (`none`, `range`, `rangeStart`, `rangeEnd`, `selectedStart`, `selectedEnd`), pulsing animation for selected endpoints, month label on day 1, even/odd month tinting, and `onTapped` callback
 - **`CalendarGrid`** — scrolling calendar grid with single-day and date-range selection modes:
-  - Layout: `ScrollViewReader` → `ScrollView` → `LazyVStack` → `ForEach` week rows → `HStack` of 7 `DayCell`s
-  - Infinite scrolling: lazy-loads ±6 months when edge rows appear
+  - Layout: `ScrollView` → `LazyVStack` → `ForEach` week rows → `HStack` of 7 `DayCell`s
+  - Scroll position tracked via `scrollPosition(id: $visibleWeek)` with `.scrollTargetBehavior(.viewAligned)` for snap-to-row
+  - Explicit `.frame(height: cellSize)` on each row so LazyVStack knows unrealized row heights
+  - Pre-generates 10 years backward + 1 year forward on init; appends forward on demand
+  - **Backward extension**: inserting items above the viewport in a live LazyVStack with `scrollPosition(id:)` causes unrecoverable position jumps — workaround is to show a spinner overlay, merge new data, then force a new ScrollView via `.id(scrollViewID)` so SwiftUI creates a fresh instance positioned at the trigger week
+  - Year labels (top-leading, bottom-trailing) derived from `visibleWeek`
+  - Programmatic scroll-to-day via optional `scrollTo: Binding<Day?>`
+  - Haptic feedback on scroll snap via `.sensoryFeedback(.selection, trigger: visibleWeek)`
   - Selection state machine: `idle` → `newSelection`/`adjustingStart`/`adjustingEnd` → `idle`
   - Mac Catalyst: `.onContinuousHover` provides live preview of moving endpoint during selection
   - Touch devices: tap-only selection (no drag gestures — they conflict with scroll)
-  - Scroll-to-start on appear via `ScrollViewReader.scrollTo()`
-- **`CalendarPicker`** — reference code from Worldly project, kept for now
+  - Self-sizing: width always `7 * cellSize`; height from optional `visibleRows` parameter or measured from available space via GeometryReader
+- **`CalendarPicker`** — thin wrapper around `CalendarGrid` with title, tappable date header (scrolls grid to tapped date), and days/nights summary for range mode
 
 ## Key Patterns
 
