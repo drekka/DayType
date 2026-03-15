@@ -6,12 +6,13 @@ import PackageDescription
 let package = Package(
     name: "DayType",
     platforms: [
-        .iOS(.v16),
-        .macOS(.v13),
+        .iOS(.v17),
+        .macOS(.v14),
     ],
     products: [
         .library(name: "DayType", targets: ["DayType"]),
         .library(name: "DayTypeMacros", targets: ["DayTypeMacros"]),
+        .library(name: "DayTypeUI", targets: ["DayTypeUI"]),
     ],
     dependencies: [
         .package(url: "https://github.com/swiftlang/swift-syntax.git", from: "602.0.0"),
@@ -24,14 +25,21 @@ let package = Package(
                 "DayTypeMacros",
                 .product(name: "OrderedCollections", package: "swift-collections"),
             ],
-            path: "Sources"
+            path: "Sources/api"
+        ),
+        .target(
+            name: "DayTypeUI",
+            dependencies: [
+                "DayType",
+            ],
+            path: "Sources/ui"
         ),
         .target(
             name: "DayTypeMacros",
             dependencies: [
                 "DayTypeMacroImplementations",
             ],
-            path: "Macros/Module"
+            path: "Sources/macros/Module"
         ),
         .macro(
             name: "DayTypeMacroImplementations",
@@ -40,7 +48,7 @@ let package = Package(
                 .product(name: "SwiftDiagnostics", package: "swift-syntax"),
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
             ],
-            path: "Macros/Implementations"
+            path: "Sources/macros/Implementations"
         ),
         .testTarget(
             name: "DayTypeTests",
@@ -49,7 +57,14 @@ let package = Package(
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftParser", package: "swift-syntax"),
             ],
-            path: "Tests"
+            path: "Tests/api"
+        ),
+        .testTarget(
+            name: "DayTypeUITests",
+            dependencies: [
+                "DayTypeUI",
+            ],
+            path: "Tests/ui"
         ),
     ]
 )

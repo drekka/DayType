@@ -35,6 +35,20 @@
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "DayTypeUI"
+               BuildableName = "DayTypeUI"
+               BlueprintName = "DayTypeUI"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -56,6 +70,16 @@
                BlueprintIdentifier = "DayTypeTests"
                BuildableName = "DayTypeTests"
                BlueprintName = "DayTypeTests"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "DayTypeUITests"
+               BuildableName = "DayTypeUITests"
+               BlueprintName = "DayTypeUITests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>

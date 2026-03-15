@@ -10,7 +10,9 @@ public extension OrderedDictionary where Key == Day, Value == [CalendarDay] {
     ///
     /// - returns: A merged ``CalendarDays`` in chronological order.
     static func + (lhs: Self, rhs: Self) -> Self {
-        lhs.merging(rhs) { current, _ in current }
+        var result = lhs.merging(rhs) { current, _ in current }
+        result.sort { $0.key < $1.key }
+        return result
     }
 
     /// Merges two calendar month dictionaries, maintaining chronological order.
@@ -19,6 +21,6 @@ public extension OrderedDictionary where Key == Day, Value == [CalendarDay] {
     /// because the key (the first ``Day`` of the week) already exists.
     /// When both dictionaries contain the same key, the left-hand side's entry is kept.
     static func += (lhs: inout Self, rhs: Self) {
-        lhs = lhs.merging(rhs) { current, _ in current }
+        lhs = lhs + rhs
     }
 }
