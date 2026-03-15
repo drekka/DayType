@@ -8,7 +8,7 @@ import SwiftUI
 /// and a summary footer in range mode.
 public struct CalendarPicker: View {
 
-    private let title: String
+    private let title: String?
     private let mode: CalendarGrid.Mode
     @Binding private var start: Day
     @Binding private var end: Day
@@ -19,9 +19,9 @@ public struct CalendarPicker: View {
     /// Creates a calendar picker for selecting a single date.
     ///
     /// - Parameters:
-    ///   - title: Title displayed at the top of the picker.
+    ///   - title: Optional title displayed at the top of the picker.
     ///   - selection: Binding to the selected day. Tapping the displayed date scrolls back to it.
-    public init(title: String, selection: Binding<Day>) {
+    public init(title: String? = nil, selection: Binding<Day>) {
         self.title = title
         mode = .single
         _start = selection
@@ -34,10 +34,10 @@ public struct CalendarPicker: View {
     /// and a days/nights summary below the header.
     ///
     /// - Parameters:
-    ///   - title: Title displayed at the top of the picker.
+    ///   - title: Optional title displayed at the top of the picker.
     ///   - start: Binding to the range start day.
     ///   - end: Binding to the range end day.
-    public init(title: String, start: Binding<Day>, end: Binding<Day>) {
+    public init(title: String? = nil, start: Binding<Day>, end: Binding<Day>) {
         self.title = title
         mode = .range
         _start = start
@@ -59,11 +59,14 @@ public struct CalendarPicker: View {
 
     // MARK: - Title bar
 
+    @ViewBuilder
     private var titleBar: some View {
-        Text(title)
-            .font(.headline)
-            .frame(maxWidth: .infinity)
-            .padding(.bottom, 12)
+        if let title {
+            Text(title)
+                .font(.headline)
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, 12)
+        }
     }
 
     // MARK: - Date header
