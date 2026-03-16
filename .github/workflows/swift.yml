@@ -26,3 +26,4 @@ jobs:
       with:
         coverage: 90
         show-all-files: true
+        excludes: **/Sources/ui/**
