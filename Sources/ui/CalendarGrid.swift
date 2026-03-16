@@ -96,49 +96,14 @@ public struct CalendarGrid: View {
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
-            ScrollView(.vertical, showsIndicators: false) {
-                LazyVStack(spacing: 0) {
-                    ForEach(Array(calendar.keys), id: \.self) { weekStart in
-                        weekRow(calendar[weekStart]!)
-                            // Explicit height so LazyVStack knows the size of unrealized rows.
-                            // Without this, offset calculations break when content changes.
-                            .frame(height: cellSize)
-                            .id(weekStart)
-                    }
-                }
-                .scrollTargetLayout()
-            }
-            // Changing scrollViewID forces a fresh ScrollView — the only safe way to extend backward.
-            // See extendBackward(from:) for details.
-            .id(scrollViewID)
-            .scrollTargetBehavior(.viewAligned)
-            .scrollPosition(id: $visibleWeek, anchor: .top)
-            .frame(height: requestedVisibleRows.map { CGFloat($0) * cellSize })
-            .background {
-                if requestedVisibleRows == nil {
-                    GeometryReader { geo in
-                        Color.clear
-                            .onChange(of: geo.size.height, initial: true) { _, height in
-                                measuredVisibleRows = max(1, Int(height / cellSize))
-                            }
-                    }
-                }
-            }
+            calendarScrollView
 
             Text(bottomYear)
                 .font(.title2)
                 .foregroundStyle(.secondary)
                 .frame(maxWidth: .infinity, alignment: .trailing)
         }
-        .overlay {
-            if isExtending {
-                ZStack {
-                    Color(.systemBackground).opacity(0.6)
-                    ProgressView()
-                        .controlSize(.large)
-                }
-            }
-        }
+        .overlay { extendingOverlay }
         .onAppear {
             if calendar.isEmpty {
                 calendar = Self.generateCalendar(around: start)
@@ -158,6 +123,48 @@ public struct CalendarGrid: View {
         }
         .sensoryFeedback(.selection, trigger: visibleWeek)
         .frame(width: 7 * cellSize)
+    }
+
+    // MARK: - Extracted sub-views
+
+    private var calendarScrollView: some View {
+        ScrollView(.vertical, showsIndicators: false) {
+            LazyVStack(spacing: 0) {
+                ForEach(Array(calendar.keys), id: \.self) { weekStart in
+                    weekRow(calendar[weekStart]!)
+                        .frame(height: cellSize)
+                        .id(weekStart)
+                }
+            }
+            .scrollTargetLayout()
+        }
+        // Changing scrollViewID forces a fresh ScrollView — the only safe way to extend backward.
+        // See extendBackward(from:) for details.
+        .id(scrollViewID)
+        .scrollTargetBehavior(.viewAligned)
+        .scrollPosition(id: $visibleWeek, anchor: .top)
+        .frame(height: requestedVisibleRows.map { CGFloat($0) * cellSize })
+        .background {
+            if requestedVisibleRows == nil {
+                GeometryReader { geo in
+                    Color.clear
+                        .onChange(of: geo.size.height, initial: true) { _, height in
+                            measuredVisibleRows = max(1, Int(height / cellSize))
+                        }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private var extendingOverlay: some View {
+        if isExtending {
+            ZStack {
+                Rectangle().fill(.background).opacity(0.6)
+                ProgressView()
+                    .controlSize(.large)
+            }
+        }
     }
 
     // MARK: - Week row
