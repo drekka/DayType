@@ -18,6 +18,13 @@
         "identifier" : "DayTypeTests",
         "name" : "DayTypeTests"
       }
+    },
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "DayTypeUITests",
+        "name" : "DayTypeUITests"
+      }
     }
   ],
   "version" : 1

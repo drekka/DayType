@@ -174,4 +174,47 @@ struct DayCalendarTests {
 
         #expect(calendar.count == expectedCount)
     }
+
+    // MARK: - Key ordering
+
+    @Test("Keys are chronologically sorted after merging later into earlier")
+    func keysSortedAppend() throws {
+        let march = try Day(2026, 3, 15).calendarMonth(startingOn: .monday)
+        let april = try Day(2026, 4, 15).calendarMonth(startingOn: .monday)
+        let merged = march + april
+        let keys = Array(merged.keys)
+
+        #expect(keys == keys.sorted())
+    }
+
+    @Test("Keys are chronologically sorted after merging earlier into later")
+    func keysSortedPrepend() throws {
+        let march = try Day(2026, 3, 15).calendarMonth(startingOn: .monday)
+        let april = try Day(2026, 4, 15).calendarMonth(startingOn: .monday)
+        let merged = april + march
+        let keys = Array(merged.keys)
+
+        #expect(keys == keys.sorted())
+    }
+
+    @Test("Keys are chronologically sorted after += with earlier months")
+    func keysSortedPlusEqualsPrepend() throws {
+        var april = try Day(2026, 4, 15).calendarMonth(startingOn: .monday)
+        let feb = try Day(2026, 2, 15).calendarMonth(startingOn: .monday)
+        april += feb
+        let keys = Array(april.keys)
+
+        #expect(keys == keys.sorted())
+    }
+
+    @Test("Keys are chronologically sorted after merging non-adjacent months in reverse order")
+    func keysSortedNonAdjacentReverse() throws {
+        let jan = try Day(2026, 1, 15).calendarMonth(startingOn: .monday)
+        let june = try Day(2026, 6, 15).calendarMonth(startingOn: .monday)
+        let march = try Day(2026, 3, 15).calendarMonth(startingOn: .monday)
+        let merged = june + jan + march
+        let keys = Array(merged.keys)
+
+        #expect(keys == keys.sorted())
+    }
 }
