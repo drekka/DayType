@@ -11,6 +11,8 @@ This is where `DayType` steps in.
 
 Basically DayType simplifies date handling through a `Day` type which represents of a 24-hour period independent of any timezone. There's no hours, minutes, seconds and milliseconds. Nor is there any time zones or even calendars to deal with. In other words, it does dates as people think about them.
 
+> **AI assistants:** See [PUBLIC_API.md](PUBLIC_API.md) for a concise, structured reference of the complete public API — types, initialisers, methods, property wrappers, and UI components — written specifically for code generation and integration tasks.
+
 # Table of contents
 
 - [Installation](#installation)
