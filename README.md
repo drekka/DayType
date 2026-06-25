@@ -48,7 +48,13 @@ Basically DayType simplifies date handling through a `Day` type which represents
 
 ## Installation
 
-`DayType` is a SPM package only. So install it as you would install any other package.
+`DayType` is available as a Swift Package. Add it via Xcode's _Package Dependencies_ or directly in `Package.swift`:
+
+```
+https://codeberg.org/drekka/DayType.git
+```
+
+A read-only mirror is also available on [GitHub](https://github.com/drekka/DayType) for discoverability. Please use the Codeberg URL when adding the package — issues and PRs are managed there.
 
 # Introducing Day
 
@@ -347,4 +353,4 @@ struct SomeView: View {
 
 Obviously there are a large number of useful functions that can be added to this API, many of which could come from various other calculations on the [Hinnant date algorithms page](http://howardhinnant.github.io/date_algorithms.html). However I plan to add these as it becomes clear they will provide a useful addition rather than reimplementing a large number of functions that may not be needed.
 
-Please feel free to drop a request for anything you'd like added.
+Please feel free to [open an issue on Codeberg](https://codeberg.org/drekka/DayType/issues) to request anything you'd like added.
