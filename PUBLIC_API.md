@@ -123,8 +123,12 @@ Month-end clamping: `try Day(2026, 1, 31).day(byAdding: .month, value: 1)` → `
 // Convert to Foundation Date
 func date(inCalendar calendar: Calendar = .current, timeZone: TimeZone? = nil) -> Date
 
-// Format as a localised date string
+// Format as a localised date string using a fixed preset
 func formatted(_ day: Date.FormatStyle.DateStyle = .abbreviated) -> String
+
+// Format using a custom, component-based Date.FormatStyle — for shapes the presets
+// above can't express, e.g. day + month with no year: `.dateTime.day().month(.abbreviated)`
+func formatted(_ style: Date.FormatStyle) -> String
 ```
 
 ### Calendar grid generation
