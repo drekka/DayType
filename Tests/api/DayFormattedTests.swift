@@ -14,3 +14,15 @@ func formatted() throws {
     #expect(day.formatted(.long) == date.formatted(date: .long, time: .omitted))
     #expect(day.formatted(.numeric) == date.formatted(date: .numeric, time: .omitted))
 }
+
+@Test("Day formatted(_ style:) matches Date formatted strings")
+func formattedWithStyle() throws {
+
+    let day = try Day(2026, 9, 14)
+    let date = DateComponents(calendar: .current, year: 2026, month: 9, day: 14).date!
+    let style = Date.FormatStyle(locale: Locale(identifier: "en_US"), calendar: .current)
+        .day()
+        .month(.abbreviated)
+
+    #expect(day.formatted(style) == date.formatted(style))
+}

@@ -28,6 +28,7 @@ Basically DayType simplifies date handling through a `Day` type which represents
     - [func date(inCalendar calendar: Calendar = .current, timeZone: TimeZone? = nil) -> Date](#func-date-incalendar-calendar-calendar-current-timezone-timezone-nil-date)
     - [func day(byAdding component: Day.Component, value: Int) -> Day](#func-day-byadding-component-day-component-value-int-day)
     - [func formatted(_ day: Date.FormatStyle.DateStyle = .abbreviated) -> String](#func-formatted-day-date-formatstyle-datestyle-abbreviated-string)
+    - [func formatted(_ style: Date.FormatStyle) -> String](#func-formatted-style-date-formatstyle-string)
 - [Calendar generation](#calendar-generation)
   - [Generating a calendar month](#generating-a-calendar-month)
   - [Merging calendar months](#merging-calendar-months)
@@ -142,6 +143,14 @@ Adds any number of years, months or days to a `Day` and returns a new `Day`. Thi
 ### func formatted(_ day: Date.FormatStyle.DateStyle = .abbreviated) -> String
 
 Uses Apple's `Date.formatted(date:time:)` function to format the day into a `String` using the formatting specified in `Date.FormatStyle.DateStyle`.
+
+### func formatted(_ style: Date.FormatStyle) -> String
+
+Formats the day using a custom, component-based `Date.FormatStyle` — for shapes the fixed presets above can't express, such as day + month with no year:
+
+```swift
+try Day(2026, 9, 14).formatted(.dateTime.day().month(.abbreviated)) // "14 Sep"
+```
 
 # Calendar generation
 
